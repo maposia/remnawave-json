@@ -9,10 +9,13 @@ import (
 )
 
 type Config struct {
-	V2rayTemplatePath string
-	V2RayTemplate     map[string]interface{}
-	RemnaweweURL      string
-	AppPort           string
+	V2rayTemplatePath    string
+	V2RayTemplate        map[string]interface{}
+	V2rayMuxEnabled      bool
+	V2rayMuxTemplatePath string
+	V2RayMuxTemplate     map[string]interface{}
+	RemnaweweURL         string
+	AppPort              string
 }
 
 var conf Config
@@ -41,6 +44,26 @@ func InitConfig() {
 		panic(err)
 	}
 	conf.V2RayTemplate = utils.ConvertJsonStringIntoMap(string(data))
+
+	conf.V2rayMuxEnabled = os.Getenv("V2RAY_MUX_ENABLED") == "true"
+
+	if conf.V2rayMuxEnabled {
+		conf.V2rayMuxTemplatePath = os.Getenv("V2RAY_MUX_TEMPLATE_PATH")
+		if conf.V2rayMuxTemplatePath == "" {
+			conf.V2rayMuxTemplatePath = "/app/templates/mux/default.json"
+		}
+		if _, err := os.Stat(conf.V2rayMuxTemplatePath); os.IsNotExist(err) {
+			slog.Error("Mux template file does not exist: %s", conf.V2rayMuxTemplatePath)
+			panic(err)
+		}
+		muxData, err := os.ReadFile(conf.V2rayMuxTemplatePath)
+		if err != nil {
+			slog.Error("Error reading V2ray Mux template file")
+			panic(err)
+		}
+		conf.V2RayMuxTemplate = utils.ConvertJsonStringIntoMap(string(muxData))
+
+	}
 
 	conf.RemnaweweURL = os.Getenv("REMNAWAWE_URL")
 	if conf.RemnaweweURL == "" {

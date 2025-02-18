@@ -54,6 +54,7 @@ func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, er
 				if outboundMap, ok := outbound.(map[string]interface{}); ok {
 					if protocol, ok := outboundMap["protocol"].(string); ok && protocol == "vless" {
 						outboundMap["tag"] = "proxy"
+						outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
 					}
 				}
 			}
