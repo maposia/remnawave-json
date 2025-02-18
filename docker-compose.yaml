@@ -5,3 +5,5 @@ services:
       - "4000:4000"
     env_file:
       - .env
+#    volumes:
+#      - path/to/templates/default.json:/app/templates/v2ray/default.json
