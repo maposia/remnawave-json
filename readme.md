@@ -4,19 +4,15 @@ This document provides a description of the environment variables used in the ap
 
 ## Environment Variables
 
-1. **REMNAWAWE_TOKEN**  
-   _Description:_ The token used for authentication or access to the REMNAWAWE service.  
-   _Example:_ `REMNAWAWE_TOKEN=token`
-
-2. **REMNAWAWE_URL**  
+1. **REMNAWAWE_URL**  
    _Description:_ The base URL for the REMNAWAWE service.  
    _Example:_ `REMNAWAWE_URL=domain`
 
-3. **APP_PORT**  
+2. **APP_PORT**  
    _Description:_ The port on which the application will run.  
    _Example:_ `APP_PORT=4000`
 
-4. **V2RAY_TEMPLATE_PATH**  
+3. **V2RAY_TEMPLATE_PATH**  
    _Description:_ The file path to the default V2Ray configuration template.  
    _Example:_ `V2RAY_TEMPLATE_PATH=/app/templates/v2ray/default.json`
 
