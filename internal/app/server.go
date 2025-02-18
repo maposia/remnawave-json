@@ -22,7 +22,7 @@ func Start(service *service.Service) {
 	r.HandleFunc("/{shortUuid}/v2ray-json", handler.V2rayJson).Methods("GET")
 	r.HandleFunc("/{shortUuid}", handler.Direct).Methods("GET")
 
-	addr := fmt.Sprintf("%s:%s", "0.0.0.0", config.GetConfig().AppPort)
+	addr := fmt.Sprintf("%s:%s", "localhost", config.GetConfig().AppPort)
 
 	Server = &http.Server{
 		Addr:    addr,
