@@ -11,7 +11,6 @@ import (
 type Config struct {
 	V2rayTemplatePath string
 	V2RayTemplate     map[string]interface{}
-	RemnawaweToken    string
 	RemnaweweURL      string
 	AppPort           string
 }
@@ -43,11 +42,6 @@ func InitConfig() {
 	}
 	conf.V2RayTemplate = utils.ConvertJsonStringIntoMap(string(data))
 
-	conf.RemnawaweToken = os.Getenv("REMNAWAWE_TOKEN")
-	if conf.RemnawaweToken == "" {
-		slog.Error("remnawawe token not found")
-		panic(errors.New("remnawawe token not found"))
-	}
 	conf.RemnaweweURL = os.Getenv("REMNAWAWE_URL")
 	if conf.RemnaweweURL == "" {
 		slog.Error("remnawawe url not found")

@@ -7,7 +7,7 @@ import (
 	"remnawawe-json/internal/app"
 	"remnawawe-json/internal/config"
 	"remnawawe-json/internal/service"
-	"remnawawe-json/remnawawe"
+	"remnawawe-json/remnawave"
 	"syscall"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	config.InitConfig()
 
 	conf := config.GetConfig()
-	remnawawePanel := remnawawe.NewPanel(conf.RemnaweweURL, conf.RemnawaweToken)
+	remnawawePanel := remnawave.NewPanel(conf.RemnaweweURL)
 
 	go app.Start(service.NewService(remnawawePanel))
 

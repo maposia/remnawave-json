@@ -10,7 +10,7 @@ RUN go mod download
 COPY ./cmd/app .
 
 COPY ./internal ./internal
-COPY ./remnawawe ./remnawawe
+COPY remnawave ./remnawawe
 COPY templates ./template
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /bin/app .

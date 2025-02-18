@@ -1,4 +1,4 @@
-package remnawawe
+package remnawave
 
 import (
 	"crypto/tls"
@@ -36,7 +36,7 @@ type Panel struct {
 	token   string
 }
 
-func NewPanel(baseURL, token string) *Panel {
+func NewPanel(baseURL string) *Panel {
 	return &Panel{
 		client: &http.Client{
 			Transport: &http.Transport{
@@ -44,7 +44,6 @@ func NewPanel(baseURL, token string) *Panel {
 			},
 		},
 		baseURL: baseURL,
-		token:   token,
 	}
 }
 
@@ -54,7 +53,6 @@ func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error)
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	httpReq.Header.Set("Authorization", "Bearer "+p.token)
 	httpReq.Header.Set("Content-Type", "application/json")
 
 	resp, err := p.client.Do(httpReq)

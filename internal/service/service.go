@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"remnawawe-json/internal/config"
 	"remnawawe-json/internal/utils"
-	"remnawawe-json/remnawawe"
+	"remnawawe-json/remnawave"
 )
 
 type Service struct {
-	panel remnawawe.Panel
+	panel remnawave.Panel
 }
 
 func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, error) {
@@ -128,7 +128,7 @@ func isEmptySlice(data interface{}) bool {
 	return false
 }
 
-func NewService(panel *remnawawe.Panel) *Service {
+func NewService(panel *remnawave.Panel) *Service {
 	return &Service{
 		panel: *panel,
 	}
