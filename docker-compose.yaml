@@ -1,8 +1,7 @@
 services:
   remnawawe-json:
     build: .
-    ports:
-      - "4000:4000"
+    network_mode: host
     env_file:
       - .env
 #    volumes:
