@@ -63,8 +63,7 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	client := &http.Client{}
-	resp, err := client.Do(httpReq)
+	resp, err := h.service.Panel.Client.Do(httpReq)
 	if err != nil {
 		http.Error(w, "failed to forward request", http.StatusBadGateway)
 		return

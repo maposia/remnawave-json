@@ -31,13 +31,13 @@ type ResponseWrapper struct {
 }
 
 type Panel struct {
-	client  *http.Client
+	Client  *http.Client
 	BaseURL string
 }
 
 func NewPanel(baseURL string) *Panel {
 	return &Panel{
-		client: &http.Client{
+		Client: &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
@@ -54,7 +54,7 @@ func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error)
 
 	httpReq.Header.Set("Content-Type", "application/json")
 
-	resp, err := p.client.Do(httpReq)
+	resp, err := p.Client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
@@ -79,7 +79,7 @@ func (p *Panel) GetUserInfo(shortUuid string) (map[string][]string, error) {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	resp, err := p.client.Do(httpReq)
+	resp, err := p.Client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
