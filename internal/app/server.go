@@ -20,6 +20,7 @@ func Start(service *service.Service) {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/{shortUuid}/v2ray-json", handler.V2rayJson).Methods("GET")
+	r.HandleFunc("/{shortUuid}", handler.Direct).Methods("GET")
 
 	addr := fmt.Sprintf("%s:%s", "0.0.0.0", config.GetConfig().AppPort)
 

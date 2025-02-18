@@ -32,8 +32,7 @@ type ResponseWrapper struct {
 
 type Panel struct {
 	client  *http.Client
-	baseURL string
-	token   string
+	BaseURL string
 }
 
 func NewPanel(baseURL string) *Panel {
@@ -43,12 +42,12 @@ func NewPanel(baseURL string) *Panel {
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		},
-		baseURL: baseURL,
+		BaseURL: baseURL,
 	}
 }
 
 func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error) {
-	httpReq, err := http.NewRequest(http.MethodGet, p.baseURL+"/api/sub/"+shortUuid+"/info", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/info", nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -62,7 +61,7 @@ func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error)
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		slog.Error("error while getting subscription", slog.String("url", p.baseURL+resp.Request.URL.String()))
+		slog.Error("error while getting subscription", slog.String("url", p.BaseURL+resp.Request.URL.String()))
 		return nil, fmt.Errorf("getting subscription status: %s", resp.Status)
 	}
 
@@ -75,7 +74,7 @@ func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error)
 }
 
 func (p *Panel) GetUserInfo(shortUuid string) (map[string][]string, error) {
-	httpReq, err := http.NewRequest(http.MethodGet, p.baseURL+"/api/sub/"+shortUuid+"/json", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/json", nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -87,7 +86,7 @@ func (p *Panel) GetUserInfo(shortUuid string) (map[string][]string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		slog.Error("error while getting subscription", slog.String("url", p.baseURL+resp.Request.URL.String()))
+		slog.Error("error while getting subscription", slog.String("url", p.BaseURL+resp.Request.URL.String()))
 		return nil, fmt.Errorf("getting subscription status: %s", resp.Status)
 	}
 

@@ -3,6 +3,7 @@ package rest
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"io"
 	"log/slog"
 	"net/http"
 	"remnawawe-json/internal/service"
@@ -43,5 +44,44 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(jsonBytes)
 	if err != nil {
 		return
+	}
+}
+
+func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
+	shortUuid := mux.Vars(r)["shortUuid"]
+
+	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid
+	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
+	if err != nil {
+		http.Error(w, "failed to create request", http.StatusInternalServerError)
+		return
+	}
+
+	for key, values := range r.Header {
+		for _, value := range values {
+			httpReq.Header.Add(key, value)
+		}
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		http.Error(w, "failed to forward request", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Копируем заголовки ответа
+	for key, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+
+	w.WriteHeader(resp.StatusCode)
+
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
 	}
 }

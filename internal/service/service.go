@@ -11,12 +11,12 @@ import (
 )
 
 type Service struct {
-	panel remnawave.Panel
+	Panel remnawave.Panel
 }
 
 func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, error) {
-	sub, err := s.panel.GetSubscription(shortUuid)
-	headers, _ := s.panel.GetUserInfo(shortUuid)
+	sub, err := s.Panel.GetSubscription(shortUuid)
+	headers, _ := s.Panel.GetUserInfo(shortUuid)
 
 	if err != nil {
 		slog.Error("Get Subscription Error", err)
@@ -130,6 +130,6 @@ func isEmptySlice(data interface{}) bool {
 
 func NewService(panel *remnawave.Panel) *Service {
 	return &Service{
-		panel: *panel,
+		Panel: *panel,
 	}
 }
