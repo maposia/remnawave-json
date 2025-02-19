@@ -1,12 +1,14 @@
 package rest
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io"
 	"log/slog"
 	"net/http"
 	"remnawawe-json/internal/service"
+	"strings"
 )
 
 type Handler struct {
@@ -34,6 +36,7 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+decodeBase64Title(headers["Profile-Title"][0])+"\"")
 	for key, values := range headers {
 		for _, value := range values {
 			w.Header().Set(key, value)
@@ -83,4 +86,10 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
 	}
+}
+
+func decodeBase64Title(encoded string) string {
+	trimmed := strings.TrimPrefix(encoded, "base64:")
+	decodedBytes, _ := base64.StdEncoding.DecodeString(trimmed)
+	return string(decodedBytes)
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/xtls/libxray"
 	"log/slog"
 	"net/http"
@@ -42,7 +43,7 @@ func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, er
 			for _, outbound := range outboundsArray {
 				if outboundMap, ok := outbound.(map[string]interface{}); ok {
 					if sendThrough, exists := outboundMap["sendThrough"]; exists {
-						configCopy["remarks"] = sendThrough
+						configCopy["remarks"] = convertStringToUnicodeEscaped(sendThrough.(string))
 						delete(outboundMap, "sendThrough")
 					}
 				}
@@ -72,6 +73,14 @@ func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, er
 	}
 
 	return jsonSub, headers, nil
+}
+
+func convertStringToUnicodeEscaped(input string) string {
+	encoded, err := json.Marshal(input)
+	if err != nil {
+		return "proxy"
+	}
+	return string(encoded[1 : len(encoded)-1])
 }
 
 func cleanJsonData(data interface{}) interface{} {
