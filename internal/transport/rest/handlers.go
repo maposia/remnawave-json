@@ -36,7 +36,6 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Content-Disposition", "attachment; filename=\""+decodeBase64Title(headers["Profile-Title"][0])+"\"")
 	for key, values := range headers {
 		for _, value := range values {
 			w.Header().Set(key, value)

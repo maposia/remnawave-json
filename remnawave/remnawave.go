@@ -95,6 +95,7 @@ func (p *Panel) GetUserInfo(shortUuid string) (map[string][]string, error) {
 		"Profile-Update-Interval",
 		"Subscription-Userinfo",
 		"Profile-Web-Page-Url",
+		"Content-Disposition",
 	}
 
 	resultHeaders := make(map[string][]string)
