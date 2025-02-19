@@ -1,14 +1,12 @@
 package rest
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"io"
 	"log/slog"
 	"net/http"
 	"remnawawe-json/internal/service"
-	"strings"
 )
 
 type Handler struct {
@@ -72,7 +70,6 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	// Копируем заголовки ответа
 	for key, values := range resp.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
@@ -85,10 +82,4 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
 	}
-}
-
-func decodeBase64Title(encoded string) string {
-	trimmed := strings.TrimPrefix(encoded, "base64:")
-	decodedBytes, _ := base64.StdEncoding.DecodeString(trimmed)
-	return string(decodedBytes)
 }

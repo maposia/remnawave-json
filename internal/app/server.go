@@ -81,12 +81,7 @@ func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 			handler.V2rayJson(w, r)
 
 		case happRegex.MatchString(userAgent):
-			version := happRegex.FindStringSubmatch(userAgent)[1]
-			if compareVersions(version, "1.63.1") >= 0 {
-				handler.V2rayJson(w, r)
-			} else {
-				handler.Direct(w, r)
-			}
+			handler.V2rayJson(w, r)
 
 		default:
 			handler.Direct(w, r)
