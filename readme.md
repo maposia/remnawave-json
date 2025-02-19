@@ -1,11 +1,67 @@
-# Environment Variables
+### 📖 V2Ray Subscription Proxy with User-Agent Routing
 
-This document provides a description of the environment variables used in the application.
+This application serves as a **proxy** for generating and serving **V2Ray subscription configurations** based on `User-Agent`. It dynamically provides the correct configuration format depending on the client version, ensuring seamless compatibility across different applications.
+
+Work with https://remna.st
+
+---
+
+## ✨ Features
+- **🔀 User-Agent-Based Routing**
+   - Automatically detects and serves the correct subscription format for supported clients:
+      - **v2rayN** (`>=6.40` JSON, older versions Base64)
+      - **v2rayNG** (`>=1.8.29` JSON, older versions Base64)
+      - **Streisand** (JSON)
+      - **Happ** (`>=1.63.1` JSON, older versions Base64)
+- **🛠 Mux support**
+   - Supported `mux` template.
+- **🌍 Direct Proxy Fallback**
+   - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
+
+---
+
+## ⚙️ Configuration
+Modify `.env.sample` to adjust the application settings:
+```
+REMNAWAWE_URL=sub_domain
+APP_PORT=4000
+# V2RAY_TEMPLATE_PATH=/app/templates/v2ray/default.json
+# V2RAY_MUX_ENABLED=true
+# V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json
+
+```
+
+After modifying execute this
+```bash
+mv .env.sample .env
+```
+
+---
+
+# How to Run
+
+1. Clone the repo
+```bash
+git clone https://github.com/Jolymmiles/remnawave-json
+```
+
+2. Go to the cloned repo
+```bash
+cd remnawave-json
+```
+3. Configure .env
+
+4. Run Docker Compose
+```bash
+docker compose up -d
+```
+
+---
 
 ## Environment Variables
 
 1. **REMNAWAWE_URL**  
-   _Description:_ The base URL for the REMNAWAWE service.  
+   _Description:_ The base URL for sub domain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
    _Example:_ `REMNAWAWE_URL=domain`
 
 2. **APP_PORT**  
@@ -24,22 +80,9 @@ This document provides a description of the environment variables used in the ap
    _Description:_ The file path to the V2Ray Mux configuration template.  
    _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json`
 
----
 
-# How to Run
+## 📜 License
+This project is open-source and available under the **MIT License**.
 
-1. Clone the repo
-```bash
-git clone https://github.com/Jolymmiles/remnawave-json
-```
-
-2. Go to the cloned repo
-```bash
-cd remnawave-json
-```
-
-3. Run Docker Compose
-```bash
-docker compose up -d
-```
+🚀 *Enhance your V2Ray subscription management with automated User-Agent routing!*
 
