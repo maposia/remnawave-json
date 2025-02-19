@@ -30,12 +30,12 @@ This document provides a description of the environment variables used in the ap
 
 1. Clone the repo
 ```bash
-git clone https://github.com/Jolymmiles/remnawawe-json
+git clone https://github.com/Jolymmiles/remnawave-json
 ```
 
 2. Go to the cloned repo
 ```bash
-cd remnawawe-json
+cd remnawave-json
 ```
 
 3. Run Docker Compose
