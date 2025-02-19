@@ -55,6 +55,8 @@ var v2rayNRegex = regexp.MustCompile(`^v2rayN/(\d+\.\d+)`)
 var v2rayNGRegex = regexp.MustCompile(`^v2rayNG/(\d+\.\d+\.\d+)`)
 var streisandRegex = regexp.MustCompile(`^[Ss]treisand`)
 var happRegex = regexp.MustCompile(`^Happ/(\d+\.\d+\.\d+)`)
+var ktorClientRegex = regexp.MustCompile(`^ktor-client`)
+var v2boxRegex = regexp.MustCompile(`^V2Box`)
 
 func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -81,6 +83,12 @@ func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 			handler.V2rayJson(w, r)
 
 		case happRegex.MatchString(userAgent):
+			handler.V2rayJson(w, r)
+
+		case ktorClientRegex.MatchString(userAgent):
+			handler.V2rayJson(w, r)
+
+		case v2boxRegex.MatchString(userAgent):
 			handler.V2rayJson(w, r)
 
 		default:
