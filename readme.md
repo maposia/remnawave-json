@@ -12,14 +12,20 @@ Work with https://remna.st
       - **v2rayN** (`>=6.40` JSON, older versions Base64)
       - **v2rayNG** (`>=1.8.29` JSON, older versions Base64)
       - **Streisand** (JSON)
-      - **Happ** (`>=1.63.1` JSON, older versions Base64)
+      - **Happ** (JSON)
+      - **V2Box** (JSON)
+      - **Npv Tunnel** (JSON)
 - **🛠 Mux support**
    - Supported `mux` template.
+- **Web page template**
+  - Supported web page template.
 - **🌍 Direct Proxy Fallback**
    - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
 
 ---
-
+## Base web page
+![exmaple.png](exmaple.png)
+---
 ## ⚙️ Configuration
 Modify `.env.sample` to adjust the application settings:
 ```
@@ -83,6 +89,56 @@ docker compose up -d
 6. **WEB_PAGE_TEMPLATE_PATH**  
    _Description:_ The file path to the subscription template.  
    _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/subscription/index.html`
+
+---
+
+## Nginx example
+```nginx configuration
+server
+{
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        http2 on;
+
+        #from .env remnawave SUB_PUBLIC_DOMAIN
+        server_name sub_domain ;
+
+
+        # you certs
+        ssl_certificate /root/.acme.sh/example.com_ecc/example.com.cer;
+        ssl_certificate_key /root/.acme.sh/example.com_ecc/example.com.key;
+        ssl_dhparam /etc/nginx/ssl/dhparams.pem;
+
+        ssl_protocols TLSv1.3;
+        ssl_ciphers TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-256-GCM-SHA384:TLS13-AES-128-GCM-SHA256:EECDH+CHACHA20:EECDH+AESGCM:EECDH+AES;
+        ssl_prefer_server_ciphers on;
+
+        # HSTS
+        add_header Strict-Transport-Security "max-age=63072000" always;
+
+        # OCSP stapling
+        ssl_stapling on;
+        ssl_stapling_verify on;
+        ssl_trusted_certificate /root/.acme.sh/example.com_ecc/ca.cer;
+
+        location / {
+        proxy_http_version 1.1;
+        # APP_PORT
+        proxy_pass http://127.0.0.1:4000;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+ }
+```
 
 
 ## 📜 License
