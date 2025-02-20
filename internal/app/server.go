@@ -61,7 +61,6 @@ var v2boxRegex = regexp.MustCompile(`^V2Box`)
 func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userAgent := r.Header.Get("User-Agent")
-
 		switch {
 		case v2rayNRegex.MatchString(userAgent):
 			version := v2rayNRegex.FindStringSubmatch(userAgent)[1]
@@ -92,9 +91,24 @@ func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 			handler.V2rayJson(w, r)
 
 		default:
+			if isBrowser(userAgent) {
+				handler.WebPage(w, r)
+				return
+			}
 			handler.Direct(w, r)
 		}
 	}
+}
+
+func isBrowser(userAgent string) bool {
+	browserKeywords := []string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
+
+	for _, keyword := range browserKeywords {
+		if strings.Contains(userAgent, keyword) {
+			return true
+		}
+	}
+	return false
 }
 
 func compareVersions(version1, version2 string) int {

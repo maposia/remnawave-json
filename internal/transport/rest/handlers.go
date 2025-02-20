@@ -6,11 +6,23 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"remnawawe-json/internal/config"
 	"remnawawe-json/internal/service"
+	"time"
 )
 
 type Handler struct {
 	service *service.Service
+}
+
+type User struct {
+	Status          string
+	ExpireFormatted string
+	UsedTraffic     string
+	DataLimit       string
+	SubscriptionURL string
+	ResetStrategy   string
+	Username        string
 }
 
 func NewHandler(service *service.Service) *Handler {
@@ -81,5 +93,41 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(w, resp.Body)
 	if err != nil {
 		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
+	}
+}
+
+func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
+	shortUuid := mux.Vars(r)["shortUuid"]
+
+	sub, err := h.service.Panel.GetSubscription(shortUuid)
+	if err != nil {
+		slog.Error("Get Json Error", err)
+		http.Error(w, "Ошибка получения подписки", http.StatusInternalServerError)
+		return
+	}
+
+	var expireFormatted string
+	if sub.User.ExpiresAt != "" {
+		expireTime, err := time.Parse(time.RFC3339, sub.User.ExpiresAt)
+		if err != nil {
+			slog.Error("Invalid date format", err)
+			expireFormatted = ""
+		} else {
+			expireFormatted = expireTime.Format(time.RFC3339)
+		}
+	}
+
+	user := User{
+		Status:          sub.User.UserStatus,
+		ExpireFormatted: expireFormatted,
+		UsedTraffic:     sub.User.TrafficUsed,
+		DataLimit:       sub.User.TrafficLimit,
+		SubscriptionURL: sub.SubscriptionUrl,
+		Username:        sub.User.Username,
+	}
+
+	err = config.GetConfig().WebPageTemplate.Execute(w, user)
+	if err != nil {
+		http.Error(w, "Ошибка заполнения шаблона", http.StatusInternalServerError)
 	}
 }

@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"github.com/joho/godotenv"
+	"html/template"
 	"log/slog"
 	"os"
 	"remnawawe-json/internal/utils"
@@ -16,6 +17,8 @@ type Config struct {
 	V2RayMuxTemplate     map[string]interface{}
 	RemnaweweURL         string
 	AppPort              string
+	WebPageTemplatePath  string
+	WebPageTemplate      *template.Template
 }
 
 var conf Config
@@ -44,6 +47,21 @@ func InitConfig() {
 		panic(err)
 	}
 	conf.V2RayTemplate = utils.ConvertJsonStringIntoMap(string(data))
+
+	conf.WebPageTemplatePath = os.Getenv("WEB_PAGE_TEMPLATE_PATH")
+	if conf.WebPageTemplatePath == "" {
+		conf.WebPageTemplatePath = "/app/templates/subscription/index.html"
+	}
+	if _, err := os.Stat(conf.WebPageTemplatePath); os.IsNotExist(err) {
+		slog.Error("File does not exist: %s", conf.WebPageTemplatePath)
+		panic(err)
+	}
+
+	conf.WebPageTemplate, err = template.ParseFiles(conf.WebPageTemplatePath)
+	if err != nil {
+		slog.Error("parsing web page template file:")
+		panic(err)
+	}
 
 	conf.V2rayMuxEnabled = os.Getenv("V2RAY_MUX_ENABLED") == "true"
 
