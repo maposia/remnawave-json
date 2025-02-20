@@ -100,9 +100,9 @@ func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 	}
 }
 
-func isBrowser(userAgent string) bool {
-	browserKeywords := []string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
+var browserKeywords = []string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
 
+func isBrowser(userAgent string) bool {
 	for _, keyword := range browserKeywords {
 		if strings.Contains(userAgent, keyword) {
 			return true
