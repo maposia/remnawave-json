@@ -28,7 +28,7 @@ APP_PORT=4000
 # V2RAY_TEMPLATE_PATH=/app/templates/v2ray/default.json
 # V2RAY_MUX_ENABLED=true
 # V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json
-
+# WEB_PAGE_TEMPLATE_PATH=/app/templates/subscription/index.html
 ```
 
 After modifying execute this
@@ -79,6 +79,10 @@ docker compose up -d
 5. **V2RAY_MUX_TEMPLATE_PATH**  
    _Description:_ The file path to the V2Ray Mux configuration template.  
    _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json`
+
+6. **WEB_PAGE_TEMPLATE_PATH**  
+   _Description:_ The file path to the subscription template.  
+   _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/subscription/index.html`
 
 
 ## 📜 License
