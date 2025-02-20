@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 
+
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
@@ -49,7 +50,7 @@ jobs:
       - name: Create Release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_GH_DEPLOY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref_name }}
           release_name: v${{ github.ref_name }}
@@ -59,7 +60,7 @@ jobs:
             📝 Compare changes: [${{ steps.tag.outputs.previousTag }}...${{ steps.tag.outputs.latestTag }}](https://github.com/${{ github.repository }}/compare/${{ steps.tag.outputs.previousTag }}...${{ steps.tag.outputs.latestTag }})
 
             Latest Docker image:
-            - `ghcr.io/remnawave/backend:latest`
+            - `ghcr.io/${{ github.repository_owner }}/remnawave-json:latest`
 
             Docker images:
             - `ghcr.io/${{ github.repository_owner }}/remnawave-json:${{github.ref_name}}`
