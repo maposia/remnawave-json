@@ -62,7 +62,7 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
-	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid
+	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid + "/link"
 	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
 	if err != nil {
 		http.Error(w, "failed to create request", http.StatusInternalServerError)
