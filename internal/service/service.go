@@ -15,9 +15,9 @@ type Service struct {
 	Panel remnawave.Panel
 }
 
-func (s *Service) GenerateJson(shortUuid string) ([]interface{}, http.Header, error) {
-	sub, err := s.Panel.GetSubscription(shortUuid)
-	headers, _ := s.Panel.GetUserInfo(shortUuid)
+func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, http.Header, error) {
+	sub, err := s.Panel.GetSubscription(shortUuid, header)
+	headers, _ := s.Panel.GetUserInfo(shortUuid, header)
 
 	if err != nil {
 		slog.Error("Get Subscription Error", err)

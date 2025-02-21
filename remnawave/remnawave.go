@@ -46,13 +46,14 @@ func NewPanel(baseURL string) *Panel {
 	}
 }
 
-func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error) {
+func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionResponse, error) {
 	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/info", nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("User-Agent", header)
 
 	resp, err := p.Client.Do(httpReq)
 	if err != nil {
@@ -73,11 +74,12 @@ func (p *Panel) GetSubscription(shortUuid string) (*SubscriptionResponse, error)
 	return &response.Response, nil
 }
 
-func (p *Panel) GetUserInfo(shortUuid string) (map[string][]string, error) {
+func (p *Panel) GetUserInfo(shortUuid string, header string) (map[string][]string, error) {
 	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/json", nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
+	httpReq.Header.Set("User-Agent", header)
 
 	resp, err := p.Client.Do(httpReq)
 	if err != nil {

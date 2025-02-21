@@ -33,8 +33,9 @@ func NewHandler(service *service.Service) *Handler {
 
 func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
+	header := w.Header().Get("User-Agent")
 
-	jsonData, headers, err := h.service.GenerateJson(shortUuid)
+	jsonData, headers, err := h.service.GenerateJson(shortUuid, header)
 	if err != nil {
 		slog.Error("Get Json Error", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -62,7 +63,7 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
-	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid + "/link"
+	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid
 	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
 	if err != nil {
 		http.Error(w, "failed to create request", http.StatusInternalServerError)
@@ -99,7 +100,7 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
-	sub, err := h.service.Panel.GetSubscription(shortUuid)
+	sub, err := h.service.Panel.GetSubscription(shortUuid, r.Header.Get("User-Agent"))
 	if err != nil {
 		slog.Error("Get Json Error", err)
 		http.Error(w, "Ошибка получения подписки", http.StatusInternalServerError)
