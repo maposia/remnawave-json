@@ -61,13 +61,30 @@ cd remnawave-json
 ```bash
 docker compose up -d
 ```
+---
+
+# How to update
+
+1. Go to directory with docker-compose.yaml
+```bash
+remnawave-json
+```
+2. Update image
+```bash
+docker compose pull 
+```
+
+3. Restart container
+```bash
+docker compose down && docker compose up -d 
+```
 
 ---
 
-## Environment Variables
+## 🌿 **Environment Variables**
 
 1. **REMNAWAVE_URL**  
-   _Description:_ The base URL for sub domain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
+   _Description:_ The base URL for the subdomain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
    _Example:_ `REMNAWAVE_URL=domain`
 
 2. **APP_PORT**  
@@ -88,7 +105,15 @@ docker compose up -d
 
 6. **WEB_PAGE_TEMPLATE_PATH**  
    _Description:_ The file path to the subscription template.  
-   _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/subscription/index.html`
+   _Example:_ `WEB_PAGE_TEMPLATE_PATH=/app/templates/subscription/index.html`
+
+7. **HAPP_JSON_ENABLED**  
+   _Description:_ A flag to enable or disable JSON output for Happ.  
+   _Example:_ `HAPP_JSON_ENABLED=false`
+
+8. **HAPP_ROUTING**  
+   _Description:_ The routing path for Happ connections.  
+   _Example:_ `HAPP_ROUTING=happ://routing/...`
 
 ---
 
