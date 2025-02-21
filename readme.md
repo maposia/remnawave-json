@@ -13,7 +13,7 @@ Work with https://remna.st
       - **v2rayN** (`>=6.40` JSON, older versions Base64)
       - **v2rayNG** (`>=1.8.29` JSON, older versions Base64)
       - **Streisand** (JSON)
-      - **Happ** (JSON)
+      - **Happ** (JSON & Share link)
       - **V2Box** (JSON)
       - **Npv Tunnel** (JSON)
 - **🛠 Mux support**
