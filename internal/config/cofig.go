@@ -19,6 +19,8 @@ type Config struct {
 	AppPort              string
 	WebPageTemplatePath  string
 	WebPageTemplate      *template.Template
+	HappJsonEnabled      bool
+	HappRouting          string
 }
 
 var conf Config
@@ -56,6 +58,10 @@ func InitConfig() {
 		slog.Error("File does not exist: %s", conf.WebPageTemplatePath)
 		panic(err)
 	}
+
+	conf.HappJsonEnabled = os.Getenv("HAPP_JSON_ENABLED") == "true"
+
+	conf.HappRouting = os.Getenv("HAPP_ROUTING")
 
 	conf.WebPageTemplate, err = template.ParseFiles(conf.WebPageTemplatePath)
 	if err != nil {

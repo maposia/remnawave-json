@@ -82,7 +82,14 @@ func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
 			handler.V2rayJson(w, r)
 
 		case happRegex.MatchString(userAgent):
-			handler.V2rayJson(w, r)
+			if config.GetConfig().HappJsonEnabled {
+				handler.V2rayJson(w, r)
+			} else {
+				if config.GetConfig().HappRouting != "" {
+					w.Header().Set("routing", config.GetConfig().HappRouting)
+				}
+				handler.Direct(w, r)
+			}
 
 		case ktorClientRegex.MatchString(userAgent):
 			handler.V2rayJson(w, r)
