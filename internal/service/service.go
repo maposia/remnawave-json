@@ -6,9 +6,9 @@ import (
 	"github.com/xtls/libxray"
 	"log/slog"
 	"net/http"
-	"remnawawe-json/internal/config"
-	"remnawawe-json/internal/utils"
-	"remnawawe-json/remnawave"
+	"remnawave-json/internal/config"
+	"remnawave-json/internal/utils"
+	"remnawave-json/remnawave"
 )
 
 type Service struct {

@@ -1,5 +1,5 @@
 services:
-  remnawawe-json:
+  remnawave-json:
     image: ghcr.io/jolymmiles/remnawave-json:latest
     network_mode: host
     env_file:

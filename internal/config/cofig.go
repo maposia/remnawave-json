@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"log/slog"
 	"os"
-	"remnawawe-json/internal/utils"
+	"remnawave-json/internal/utils"
 )
 
 type Config struct {
@@ -15,7 +15,7 @@ type Config struct {
 	V2rayMuxEnabled      bool
 	V2rayMuxTemplatePath string
 	V2RayMuxTemplate     map[string]interface{}
-	RemnaweweURL         string
+	RemnaweveURL         string
 	AppPort              string
 	WebPageTemplatePath  string
 	WebPageTemplate      *template.Template
@@ -83,10 +83,10 @@ func InitConfig() {
 
 	}
 
-	conf.RemnaweweURL = os.Getenv("REMNAWAWE_URL")
-	if conf.RemnaweweURL == "" {
-		slog.Error("remnawawe url not found")
-		panic(errors.New("remnawawe url not found"))
+	conf.RemnaweveURL = os.Getenv("REMNAWAVE_URL")
+	if conf.RemnaweveURL == "" {
+		slog.Error("remnawave url not found")
+		panic(errors.New("remnawave url not found"))
 	}
 	conf.AppPort = os.Getenv("APP_PORT")
 	if conf.AppPort == "" {

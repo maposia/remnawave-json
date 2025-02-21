@@ -8,9 +8,9 @@ import (
 	"log/slog"
 	"net/http"
 	"regexp"
-	"remnawawe-json/internal/config"
-	"remnawawe-json/internal/service"
-	"remnawawe-json/internal/transport/rest"
+	"remnawave-json/internal/config"
+	"remnawave-json/internal/service"
+	"remnawave-json/internal/transport/rest"
 	"strings"
 	"time"
 )

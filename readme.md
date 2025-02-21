@@ -29,7 +29,7 @@ Work with https://remna.st
 ## ⚙️ Configuration
 Modify `.env.sample` to adjust the application settings:
 ```
-REMNAWAWE_URL=sub_domain
+REMNAWAVE_URL=sub_domain
 APP_PORT=4000
 # V2RAY_TEMPLATE_PATH=/app/templates/v2ray/default.json
 # V2RAY_MUX_ENABLED=true
@@ -66,9 +66,9 @@ docker compose up -d
 
 ## Environment Variables
 
-1. **REMNAWAWE_URL**  
+1. **REMNAWAVE_URL**  
    _Description:_ The base URL for sub domain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
-   _Example:_ `REMNAWAWE_URL=domain`
+   _Example:_ `REMNAWAVE_URL=domain`
 
 2. **APP_PORT**  
    _Description:_ The port on which the application will run.  

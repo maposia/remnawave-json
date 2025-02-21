@@ -6,8 +6,8 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"remnawawe-json/internal/config"
-	"remnawawe-json/internal/service"
+	"remnawave-json/internal/config"
+	"remnawave-json/internal/service"
 	"time"
 )
 

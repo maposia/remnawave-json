@@ -4,10 +4,10 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"remnawawe-json/internal/app"
-	"remnawawe-json/internal/config"
-	"remnawawe-json/internal/service"
-	"remnawawe-json/remnawave"
+	"remnawave-json/internal/app"
+	"remnawave-json/internal/config"
+	"remnawave-json/internal/service"
+	"remnawave-json/remnawave"
 	"syscall"
 )
 
@@ -15,9 +15,9 @@ func main() {
 	config.InitConfig()
 
 	conf := config.GetConfig()
-	remnawawePanel := remnawave.NewPanel(conf.RemnaweweURL)
+	remnawavePanel := remnawave.NewPanel(conf.RemnaweveURL)
 
-	go app.Start(service.NewService(remnawawePanel))
+	go app.Start(service.NewService(remnawavePanel))
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
