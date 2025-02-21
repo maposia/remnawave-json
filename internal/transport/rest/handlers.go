@@ -33,7 +33,7 @@ func NewHandler(service *service.Service) *Handler {
 
 func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
-	header := w.Header().Get("User-Agent")
+	header := r.Header.Get("User-Agent")
 
 	jsonData, headers, err := h.service.GenerateJson(shortUuid, header)
 	if err != nil {
@@ -99,8 +99,8 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
-
-	sub, err := h.service.Panel.GetSubscription(shortUuid, r.Header.Get("User-Agent"))
+	header := r.Header.Get("User-Agent")
+	sub, err := h.service.Panel.GetSubscription(shortUuid, header)
 	if err != nil {
 		slog.Error("Get Json Error", err)
 		http.Error(w, "Ошибка получения подписки", http.StatusInternalServerError)

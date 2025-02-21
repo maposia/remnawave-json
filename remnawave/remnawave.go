@@ -1,7 +1,6 @@
 package remnawave
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -38,9 +37,7 @@ type Panel struct {
 func NewPanel(baseURL string) *Panel {
 	return &Panel{
 		Client: &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-			},
+			Transport: &http.Transport{},
 		},
 		BaseURL: baseURL,
 	}
@@ -75,7 +72,7 @@ func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionR
 }
 
 func (p *Panel) GetUserInfo(shortUuid string, header string) (map[string][]string, error) {
-	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/json", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
