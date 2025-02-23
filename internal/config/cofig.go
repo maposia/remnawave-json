@@ -16,6 +16,7 @@ type Config struct {
 	V2rayMuxTemplatePath string
 	V2RayMuxTemplate     map[string]interface{}
 	RemnaweveURL         string
+	APP_HOST             string
 	AppPort              string
 	WebPageTemplatePath  string
 	WebPageTemplate      *template.Template
@@ -93,6 +94,10 @@ func InitConfig() {
 	if conf.RemnaweveURL == "" {
 		slog.Error("remnawave url not found")
 		panic(errors.New("remnawave url not found"))
+	}
+	conf.APP_HOST = os.Getenv("APP_HOST")
+	if conf.APP_HOST == "" {
+		conf.APP_HOST = "localhost"
 	}
 	conf.AppPort = os.Getenv("APP_PORT")
 	if conf.AppPort == "" {

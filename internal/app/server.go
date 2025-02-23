@@ -22,11 +22,13 @@ func Start(service *service.Service) {
 
 	r := mux.NewRouter()
 
+	r.Use(httpsAndProxyMiddleware)
+
 	r.HandleFunc("/{shortUuid}/v2ray-json", handler.V2rayJson).Methods("GET")
 	r.HandleFunc("/{shortUuid}", userAgentRouter(handler)).Methods("GET")
 
 	Server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", "localhost", config.GetConfig().AppPort),
+		Addr:    fmt.Sprintf("%s:%s", config.GetConfig().APP_HOST, config.GetConfig().AppPort),
 		Handler: r,
 	}
 
@@ -49,6 +51,25 @@ func Stop() {
 		}
 	}
 
+}
+
+func httpsAndProxyMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if config.GetConfig().APP_HOST == "localhost" {
+			next.ServeHTTP(w, r)
+			return
+		}
+		xForwardedFor := r.Header.Get("X-Forwarded-For")
+		xForwardedProto := r.Header.Get("X-Forwarded-Proto")
+
+		if xForwardedFor == "" || xForwardedProto != "https" {
+			slog.Error("Reverse proxy and HTTPS are required.")
+			http.Error(w, "Reverse proxy and HTTPS are required", http.StatusForbidden)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 var v2rayNRegex = regexp.MustCompile(`^v2rayN/(\d+\.\d+)`)
