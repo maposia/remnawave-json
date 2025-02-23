@@ -77,7 +77,7 @@ docker compose pull
 
 3. Restart container
 ```bash
-docker compose down && docker compose up -d 
+docker compose down --remove-orphans && docker compose up -d 
 ```
 
 ---
