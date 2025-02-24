@@ -16,62 +16,40 @@ type Service struct {
 }
 
 func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, http.Header, error) {
-	sub, err := s.Panel.GetSubscription(shortUuid, header)
-	headers, _ := s.Panel.GetUserInfo(shortUuid, header)
+	headers, body, _ := s.Panel.GetUserInfo(shortUuid, header)
 
+	encJson, err := base64.StdEncoding.DecodeString(libXray.ConvertShareLinksToXrayJson(body))
 	if err != nil {
-		slog.Error("Get Subscription Error", err)
+		slog.Error("decode xray json config error", err)
 		return nil, nil, err
 	}
+	outbounds := utils.ConvertJsonStringIntoMap(string(encJson))["data"].(map[string]interface{})["outbounds"].([]interface{})
 
-	var jsonSub []interface{}
+	jsonSub := make([]interface{}, len(outbounds))
 
-	for _, link := range sub.Links {
-		encodedLink := base64.StdEncoding.EncodeToString([]byte(link))
-		encodedJson, err := base64.StdEncoding.DecodeString(libXray.ConvertShareLinksToXrayJson(encodedLink))
-		if err != nil {
-			slog.Error("error while decoding base64 link")
-			panic(err)
-		}
-		jsonConf := utils.ConvertJsonStringIntoMap(string(encodedJson))["data"].(map[string]interface{})
-
+	for i, outbound := range outbounds {
 		configCopy := utils.DeepCopyMap(config.GetConfig().V2RayTemplate)
 
-		newOutbounds := jsonConf["outbounds"]
+		if outboundMap, ok := outbound.(map[string]interface{}); ok {
+			outboundMap["tag"] = "proxy"
 
-		if outboundsArray, ok := newOutbounds.([]interface{}); ok {
-			for _, outbound := range outboundsArray {
-				if outboundMap, ok := outbound.(map[string]interface{}); ok {
-					if sendThrough, exists := outboundMap["sendThrough"]; exists {
-						configCopy["remarks"] = convertStringToUnicodeEscaped(sendThrough.(string))
-						delete(outboundMap, "sendThrough")
-					}
-				}
+			if sendThrough, exists := outboundMap["sendThrough"]; exists {
+				configCopy["remarks"] = convertStringToUnicodeEscaped(sendThrough.(string))
+				delete(outboundMap, "sendThrough")
+			}
+
+			if config.GetConfig().V2rayMuxEnabled {
+				outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
 			}
 		}
 
-		if outboundsArray, ok := newOutbounds.([]interface{}); ok {
-			for _, outbound := range outboundsArray {
-				if outboundMap, ok := outbound.(map[string]interface{}); ok {
-					outboundMap["tag"] = "proxy"
-					if config.GetConfig().V2rayMuxEnabled {
-						outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
-					}
-				}
-			}
-		}
-
-		if outbounds, ok := configCopy["outbounds"].([]interface{}); ok {
-			for _, newOutbound := range newOutbounds.([]interface{}) {
-				outbounds = append([]interface{}{newOutbound}, outbounds...) // Prepend to the beginning
-			}
-			configCopy["outbounds"] = outbounds
+		if existingOutbounds, ok := configCopy["outbounds"].([]interface{}); ok {
+			configCopy["outbounds"] = append([]interface{}{outbound}, existingOutbounds...)
 		} else {
-			configCopy["outbounds"] = newOutbounds
+			configCopy["outbounds"] = []interface{}{outbound}
 		}
 
-		cleanJsonData(configCopy)
-		jsonSub = append(jsonSub, cleanJsonData(configCopy))
+		jsonSub[i] = cleanJsonData(configCopy)
 	}
 
 	return jsonSub, headers, nil

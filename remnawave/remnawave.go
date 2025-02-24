@@ -1,8 +1,10 @@
 package remnawave
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 )
@@ -71,23 +73,30 @@ func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionR
 	return &response.Response, nil
 }
 
-func (p *Panel) GetUserInfo(shortUuid string, header string) (map[string][]string, error) {
+func (p *Panel) GetUserInfo(shortUuid string, header string) (headers map[string][]string, body string, err error) {
 	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid, nil)
 	if err != nil {
-		return nil, fmt.Errorf("creating request: %w", err)
+		return nil, "", fmt.Errorf("creating request: %w", err)
 	}
 	httpReq.Header.Set("User-Agent", header)
 
 	resp, err := p.Client.Do(httpReq)
 	if err != nil {
-		return nil, fmt.Errorf("sending request: %w", err)
+		return nil, "", fmt.Errorf("sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		slog.Error("error while getting subscription", slog.String("url", p.BaseURL+resp.Request.URL.String()))
-		return nil, fmt.Errorf("getting subscription status: %s", resp.Status)
+		return nil, "", fmt.Errorf("getting subscription status: %s", resp.Status)
 	}
+
+	bodyByte, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, "", fmt.Errorf("reading response body: %w", err)
+	}
+
+	body = base64.StdEncoding.EncodeToString(bodyByte)
 
 	filteredHeaders := []string{
 		"Profile-Title",
@@ -105,5 +114,5 @@ func (p *Panel) GetUserInfo(shortUuid string, header string) (map[string][]strin
 		}
 	}
 
-	return resultHeaders, nil
+	return resultHeaders, body, nil
 }
