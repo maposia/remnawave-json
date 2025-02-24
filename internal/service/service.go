@@ -54,7 +54,9 @@ func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, 
 			for _, outbound := range outboundsArray {
 				if outboundMap, ok := outbound.(map[string]interface{}); ok {
 					outboundMap["tag"] = "proxy"
-					outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
+					if config.GetConfig().V2rayMuxEnabled {
+						outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
+					}
 				}
 			}
 		}
