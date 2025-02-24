@@ -1,4 +1,4 @@
-### 📖 V2Ray Subscription Proxy with User-Agent Routing
+### 📖 V2Ray Json Subscription Proxy with User-Agent Routing
 
 This application serves as a **proxy** for generating and serving **V2Ray subscription configurations** based on `User-Agent`. It dynamically provides the correct configuration format depending on the client version, ensuring seamless compatibility across different applications.
 
