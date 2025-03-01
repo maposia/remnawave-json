@@ -7,16 +7,12 @@ import (
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
+	"remnawave-json/internal/remnawave"
 	"remnawave-json/internal/utils"
-	"remnawave-json/remnawave"
 )
 
-type Service struct {
-	Panel remnawave.Panel
-}
-
-func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, http.Header, error) {
-	headers, body, _ := s.Panel.GetUserInfo(shortUuid, header)
+func GenerateJson(shortUuid string, header string) ([]interface{}, http.Header, error) {
+	headers, body, _ := remnawave.GetUserInfo(shortUuid, header)
 
 	encJson, err := base64.StdEncoding.DecodeString(libXray.ConvertShareLinksToXrayJson(body))
 	if err != nil {
@@ -28,7 +24,7 @@ func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, 
 	jsonSub := make([]interface{}, len(outbounds))
 
 	for i, outbound := range outbounds {
-		configCopy := utils.DeepCopyMap(config.GetConfig().V2RayTemplate)
+		configCopy := utils.DeepCopyMap(config.GetV2RayTemplate())
 
 		if outboundMap, ok := outbound.(map[string]interface{}); ok {
 			outboundMap["tag"] = "proxy"
@@ -38,8 +34,8 @@ func (s *Service) GenerateJson(shortUuid string, header string) ([]interface{}, 
 				delete(outboundMap, "sendThrough")
 			}
 
-			if config.GetConfig().V2rayMuxEnabled {
-				outboundMap["mux"] = config.GetConfig().V2RayMuxTemplate
+			if config.IsMuxEnabled() {
+				outboundMap["mux"] = config.GetV2RayMuxTemplate()
 			}
 		}
 
@@ -114,10 +110,4 @@ func isEmptySlice(data interface{}) bool {
 		return len(s) == 0
 	}
 	return false
-}
-
-func NewService(panel *remnawave.Panel) *Service {
-	return &Service{
-		Panel: *panel,
-	}
 }

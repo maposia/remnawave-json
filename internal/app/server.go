@@ -9,31 +9,28 @@ import (
 	"net/http"
 	"regexp"
 	"remnawave-json/internal/config"
-	"remnawave-json/internal/service"
 	"remnawave-json/internal/transport/rest"
 	"strings"
 	"time"
 )
 
-var Server *http.Server
+var server *http.Server
 
-func Start(service *service.Service) {
-	handler := rest.NewHandler(service)
-
+func Start() {
 	r := mux.NewRouter()
 
 	r.Use(httpsAndProxyMiddleware)
 
-	r.HandleFunc("/{shortUuid}/v2ray-json", handler.V2rayJson).Methods("GET")
-	r.HandleFunc("/{shortUuid}", userAgentRouter(handler)).Methods("GET")
+	r.HandleFunc("/{shortUuid}/v2ray-json", rest.V2rayJson).Methods("GET")
+	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods("GET")
 
-	Server = &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", config.GetConfig().APP_HOST, config.GetConfig().AppPort),
+	server = &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
 		Handler: r,
 	}
 
-	slog.Info("Starting server on http://" + Server.Addr)
-	if err := Server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	slog.Info("Starting server on http://" + server.Addr)
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("Error while starting server")
 		panic(err)
 	}
@@ -43,9 +40,9 @@ func Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := Server.Shutdown(ctx); err != nil {
+	if err := server.Shutdown(ctx); err != nil {
 		slog.Error("Error during server shutdown", "error", err)
-		if err = Server.Close(); err != nil {
+		if err = server.Close(); err != nil {
 			slog.Error("Error during server shutdown", "error", err)
 			panic(err)
 		}
@@ -55,7 +52,7 @@ func Stop() {
 
 func httpsAndProxyMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if config.GetConfig().APP_HOST == "localhost" {
+		if config.GetAppHost() == "localhost" {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -75,60 +72,63 @@ func httpsAndProxyMiddleware(next http.Handler) http.Handler {
 var v2rayNRegex = regexp.MustCompile(`^v2rayN/(\d+\.\d+)`)
 var v2rayNGRegex = regexp.MustCompile(`^v2rayNG/(\d+\.\d+\.\d+)`)
 var streisandRegex = regexp.MustCompile(`^[Ss]treisand`)
-var happRegex = regexp.MustCompile(`^Happ/(\d+\.\d+\.\d+)`)
+var happRegex = regexp.MustCompile(`^Happ/`)
 var ktorClientRegex = regexp.MustCompile(`^ktor-client`)
 var v2boxRegex = regexp.MustCompile(`^V2Box`)
 
-func userAgentRouter(handler *rest.Handler) http.HandlerFunc {
+func userAgentRouter() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userAgent := r.Header.Get("User-Agent")
 		switch {
 		case v2rayNRegex.MatchString(userAgent):
 			version := v2rayNRegex.FindStringSubmatch(userAgent)[1]
 			if compareVersions(version, "6.40") >= 0 {
-				handler.V2rayJson(w, r)
+				rest.V2rayJson(w, r)
 			} else {
-				handler.Direct(w, r)
+				rest.Direct(w, r)
 			}
 
 		case v2rayNGRegex.MatchString(userAgent):
 			version := v2rayNGRegex.FindStringSubmatch(userAgent)[1]
 			if compareVersions(version, "1.8.29") >= 0 {
-				handler.V2rayJson(w, r)
+				rest.V2rayJson(w, r)
 			} else {
-				handler.Direct(w, r)
+				rest.Direct(w, r)
 			}
 
 		case streisandRegex.MatchString(userAgent):
-			handler.V2rayJson(w, r)
+			rest.V2rayJson(w, r)
 
 		case happRegex.MatchString(userAgent):
-			if config.GetConfig().HappJsonEnabled {
-				handler.V2rayJson(w, r)
+			if config.IsHappJsonEnabled() {
+				rest.V2rayJson(w, r)
 			} else {
-				if config.GetConfig().HappRouting != "" {
-					w.Header().Set("routing", config.GetConfig().HappRouting)
+				if config.GetHappRouting() != "" {
+					w.Header().Set("routing", config.GetHappRouting())
 				}
-				handler.Direct(w, r)
+				if config.GetHappAnnouncements() != "" {
+					w.Header().Set("announce", config.GetHappAnnouncements())
+				}
+				rest.Direct(w, r)
 			}
 
 		case ktorClientRegex.MatchString(userAgent):
-			handler.V2rayJson(w, r)
+			rest.V2rayJson(w, r)
 
 		case v2boxRegex.MatchString(userAgent):
-			handler.V2rayJson(w, r)
+			rest.V2rayJson(w, r)
 
 		default:
 			if isBrowser(userAgent) {
-				handler.WebPage(w, r)
+				rest.WebPage(w, r)
 				return
 			}
-			handler.Direct(w, r)
+			rest.Direct(w, r)
 		}
 	}
 }
 
-var browserKeywords = []string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
+var browserKeywords = [...]string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
 
 func isBrowser(userAgent string) bool {
 	for _, keyword := range browserKeywords {

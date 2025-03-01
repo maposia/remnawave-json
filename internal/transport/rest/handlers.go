@@ -7,35 +7,16 @@ import (
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
+	"remnawave-json/internal/remnawave"
 	"remnawave-json/internal/service"
 	"time"
 )
 
-type Handler struct {
-	service *service.Service
-}
-
-type User struct {
-	Status          string
-	ExpireFormatted string
-	UsedTraffic     string
-	DataLimit       string
-	SubscriptionURL string
-	ResetStrategy   string
-	Username        string
-}
-
-func NewHandler(service *service.Service) *Handler {
-	return &Handler{
-		service: service,
-	}
-}
-
-func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
+func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 	header := r.Header.Get("User-Agent")
 
-	jsonData, headers, err := h.service.GenerateJson(shortUuid, header)
+	jsonData, headers, err := service.GenerateJson(shortUuid, header)
 	if err != nil {
 		slog.Error("Get Json Error", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -60,10 +41,10 @@ func (h *Handler) V2rayJson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
+func Direct(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
-	proxyURL := h.service.Panel.BaseURL + "/api/sub/" + shortUuid
+	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid
 	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
 	if err != nil {
 		http.Error(w, "failed to create request", http.StatusInternalServerError)
@@ -76,7 +57,7 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	resp, err := h.service.Panel.Client.Do(httpReq)
+	resp, err := config.GetHttpClient().Do(httpReq)
 	if err != nil {
 		http.Error(w, "failed to forward request", http.StatusBadGateway)
 		return
@@ -97,10 +78,20 @@ func (h *Handler) Direct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
+type WebPageUser struct {
+	Status          string
+	ExpireFormatted string
+	UsedTraffic     string
+	DataLimit       string
+	SubscriptionURL string
+	ResetStrategy   string
+	Username        string
+}
+
+func WebPage(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 	header := r.Header.Get("User-Agent")
-	sub, err := h.service.Panel.GetSubscription(shortUuid, header)
+	sub, err := remnawave.GetSubscription(shortUuid, header)
 	if err != nil {
 		slog.Error("Get Json Error", err)
 		http.Error(w, "Ошибка получения подписки", http.StatusInternalServerError)
@@ -118,7 +109,7 @@ func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	user := User{
+	user := WebPageUser{
 		Status:          sub.User.UserStatus,
 		ExpireFormatted: expireFormatted,
 		UsedTraffic:     sub.User.TrafficUsed,
@@ -127,7 +118,7 @@ func (h *Handler) WebPage(w http.ResponseWriter, r *http.Request) {
 		Username:        sub.User.Username,
 	}
 
-	err = config.GetConfig().WebPageTemplate.Execute(w, user)
+	err = config.GetWebPageTemplate().Execute(w, user)
 	if err != nil {
 		http.Error(w, "Ошибка заполнения шаблона", http.StatusInternalServerError)
 	}

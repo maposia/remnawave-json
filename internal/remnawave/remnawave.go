@@ -7,6 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"remnawave-json/internal/config"
 )
 
 type User struct {
@@ -19,7 +20,6 @@ type User struct {
 	IsActive     bool   `json:"isActive"`
 	UserStatus   string `json:"userStatus"`
 }
-
 type SubscriptionResponse struct {
 	IsFound         bool                   `json:"isFound"`
 	User            User                   `json:"user"`
@@ -31,22 +31,8 @@ type ResponseWrapper struct {
 	Response SubscriptionResponse `json:"response"`
 }
 
-type Panel struct {
-	Client  *http.Client
-	BaseURL string
-}
-
-func NewPanel(baseURL string) *Panel {
-	return &Panel{
-		Client: &http.Client{
-			Transport: &http.Transport{},
-		},
-		BaseURL: baseURL,
-	}
-}
-
-func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionResponse, error) {
-	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid+"/info", nil)
+func GetSubscription(shortUuid string, header string) (*SubscriptionResponse, error) {
+	httpReq, err := http.NewRequest(http.MethodGet, config.GetRemnaweveURL()+"/api/sub/"+shortUuid+"/info", nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -54,14 +40,14 @@ func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionR
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("User-Agent", header)
 
-	resp, err := p.Client.Do(httpReq)
+	resp, err := config.GetHttpClient().Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		slog.Error("error while getting subscription", slog.String("url", p.BaseURL+resp.Request.URL.String()))
+		slog.Error("error while getting subscription", slog.String("url", config.GetRemnaweveURL()+resp.Request.URL.String()))
 		return nil, fmt.Errorf("getting subscription status: %s", resp.Status)
 	}
 
@@ -73,21 +59,21 @@ func (p *Panel) GetSubscription(shortUuid string, header string) (*SubscriptionR
 	return &response.Response, nil
 }
 
-func (p *Panel) GetUserInfo(shortUuid string, header string) (headers map[string][]string, body string, err error) {
-	httpReq, err := http.NewRequest(http.MethodGet, p.BaseURL+"/api/sub/"+shortUuid, nil)
+func GetUserInfo(shortUuid string, header string) (headers map[string][]string, body string, err error) {
+	httpReq, err := http.NewRequest(http.MethodGet, config.GetRemnaweveURL()+"/api/sub/"+shortUuid, nil)
 	if err != nil {
 		return nil, "", fmt.Errorf("creating request: %w", err)
 	}
 	httpReq.Header.Set("User-Agent", header)
 
-	resp, err := p.Client.Do(httpReq)
+	resp, err := config.GetHttpClient().Do(httpReq)
 	if err != nil {
 		return nil, "", fmt.Errorf("sending request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		slog.Error("error while getting subscription", slog.String("url", p.BaseURL+resp.Request.URL.String()))
+		slog.Error("error while getting subscription", slog.String("url", config.GetRemnaweveURL()+resp.Request.URL.String()))
 		return nil, "", fmt.Errorf("getting subscription status: %s", resp.Status)
 	}
 

@@ -10,7 +10,6 @@ RUN go mod download
 COPY ./cmd/app .
 
 COPY ./internal ./internal
-COPY remnawave ./remnawave
 COPY templates ./template
 
 RUN apk update && apk add --no-cache ca-certificates
