@@ -100,14 +100,14 @@ func userAgentRouter() http.HandlerFunc {
 			rest.V2rayJson(w, r)
 
 		case happRegex.MatchString(userAgent):
+			if config.GetHappAnnouncements() != "" {
+				w.Header().Set("announce", config.GetHappAnnouncements())
+			}
 			if config.IsHappJsonEnabled() {
 				rest.V2rayJson(w, r)
 			} else {
 				if config.GetHappRouting() != "" {
 					w.Header().Set("routing", config.GetHappRouting())
-				}
-				if config.GetHappAnnouncements() != "" {
-					w.Header().Set("announce", config.GetHappAnnouncements())
 				}
 				rest.Direct(w, r)
 			}
