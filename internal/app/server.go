@@ -103,12 +103,12 @@ func userAgentRouter() http.HandlerFunc {
 			if config.GetHappAnnouncements() != "" {
 				w.Header().Set("announce", config.GetHappAnnouncements())
 			}
+			if config.GetHappRouting() != "" {
+				w.Header().Set("routing", config.GetHappRouting())
+			}
 			if config.IsHappJsonEnabled() {
 				rest.V2rayJson(w, r)
 			} else {
-				if config.GetHappRouting() != "" {
-					w.Header().Set("routing", config.GetHappRouting())
-				}
 				rest.Direct(w, r)
 			}
 
