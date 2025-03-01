@@ -116,6 +116,10 @@ docker compose down --remove-orphans && docker compose up -d
    _Description:_ The routing path for Happ connections.  
    _Example:_ `HAPP_ROUTING=happ://routing/...`
 
+9. **HAPP_ANNOUNCEMENTS**  
+   _Description:_ Announcement text. It can be provided in plain text.
+   _Example:_ `HAPP_ANNOUNCEMENTS=zalupa`
+
 ---
 
 ## Nginx example
