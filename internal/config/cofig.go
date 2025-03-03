@@ -131,7 +131,7 @@ func InitConfig() {
 		slog.Error("remnawave url not found")
 		panic(errors.New("remnawave url not found"))
 	}
-	conf.appHost = os.Getenv("appHost")
+	conf.appHost = os.Getenv("APP_HOST")
 	if conf.appHost == "" {
 		conf.appHost = "localhost"
 	}
