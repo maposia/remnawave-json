@@ -128,7 +128,7 @@ func userAgentRouter() http.HandlerFunc {
 	}
 }
 
-var browserKeywords = [...]string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge"}
+var browserKeywords = [...]string{"Mozilla", "Chrome", "Safari", "Firefox", "Opera", "Edge", "TelegramBot"}
 
 func isBrowser(userAgent string) bool {
 	for _, keyword := range browserKeywords {
