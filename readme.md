@@ -86,7 +86,7 @@ docker compose down --remove-orphans && docker compose up -d
 
 1. **REMNAWAVE_URL**  
    _Description:_ The base URL for the subdomain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
-   _Example:_ `REMNAWAVE_URL=domain`
+   _Example:_ `REMNAWAVE_URL=https://panel.com`
 
 2. **APP_PORT**  
    _Description:_ The port on which the application will run.  
