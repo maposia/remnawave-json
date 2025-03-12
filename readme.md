@@ -22,6 +22,7 @@ Work with https://remna.st
   - Supported web page template.
 - **🌍 Direct Proxy Fallback**
    - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
+   - Supported v2ray base64 linkgs /v2ray
 
 ---
 ## Base web page
