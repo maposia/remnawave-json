@@ -65,6 +65,7 @@ func GetUserInfo(shortUuid string, header string) (headers map[string][]string, 
 		return nil, "", fmt.Errorf("creating request: %w", err)
 	}
 	httpReq.Header.Set("User-Agent", header)
+	httpReq.Header.Add("Content-Type", "text/plain; charset=utf-8")
 
 	resp, err := config.GetHttpClient().Do(httpReq)
 	if err != nil {
