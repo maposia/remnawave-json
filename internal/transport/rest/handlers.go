@@ -41,6 +41,46 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func V2ray(w http.ResponseWriter, r *http.Request) {
+	shortUuid := mux.Vars(r)["shortUuid"]
+
+	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid
+	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
+	if err != nil {
+		http.Error(w, "failed to create request", http.StatusInternalServerError)
+		return
+	}
+
+	for key, values := range r.Header {
+		for _, value := range values {
+			httpReq.Header.Add(key, value)
+		}
+	}
+
+	httpReq.Header.Add("Content-Type", "text/plain; charset=utf-8")
+
+	resp, err := config.GetHttpClient().Do(httpReq)
+	if err != nil {
+		http.Error(w, "failed to forward request", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	for key, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+
+	w.WriteHeader(resp.StatusCode)
+
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
+	}
+
+}
+
 func Direct(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 

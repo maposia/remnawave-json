@@ -22,6 +22,7 @@ func Start() {
 	r.Use(httpsAndProxyMiddleware)
 
 	r.HandleFunc("/{shortUuid}/v2ray-json", rest.V2rayJson).Methods("GET")
+	r.HandleFunc("/{shortUuid}/v2ray", rest.V2ray).Methods("GET")
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods("GET")
 
 	server = &http.Server{
