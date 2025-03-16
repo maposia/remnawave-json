@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 	"log/slog"
 	"net/http"
-	"regexp"
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/transport/rest"
 	"strings"
@@ -70,62 +69,14 @@ func httpsAndProxyMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-var v2rayNRegex = regexp.MustCompile(`^v2rayN/(\d+\.\d+)`)
-var v2rayNGRegex = regexp.MustCompile(`^v2rayNG/(\d+\.\d+\.\d+)`)
-var streisandRegex = regexp.MustCompile(`^[Ss]treisand`)
-var happRegex = regexp.MustCompile(`^Happ/`)
-var ktorClientRegex = regexp.MustCompile(`^ktor-client`)
-var v2boxRegex = regexp.MustCompile(`^V2Box`)
-
 func userAgentRouter() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userAgent := r.Header.Get("User-Agent")
-		switch {
-		case v2rayNRegex.MatchString(userAgent):
-			version := v2rayNRegex.FindStringSubmatch(userAgent)[1]
-			if compareVersions(version, "6.40") >= 0 {
-				rest.V2rayJson(w, r)
-			} else {
-				rest.Direct(w, r)
-			}
-
-		case v2rayNGRegex.MatchString(userAgent):
-			version := v2rayNGRegex.FindStringSubmatch(userAgent)[1]
-			if compareVersions(version, "1.8.29") >= 0 {
-				rest.V2rayJson(w, r)
-			} else {
-				rest.Direct(w, r)
-			}
-
-		case streisandRegex.MatchString(userAgent):
-			rest.V2rayJson(w, r)
-
-		case happRegex.MatchString(userAgent):
-			if config.GetHappAnnouncements() != "" {
-				w.Header().Set("announce", config.GetHappAnnouncements())
-			}
-			if config.GetHappRouting() != "" {
-				w.Header().Set("routing", config.GetHappRouting())
-			}
-			if config.IsHappJsonEnabled() {
-				rest.V2rayJson(w, r)
-			} else {
-				rest.Direct(w, r)
-			}
-
-		case ktorClientRegex.MatchString(userAgent):
-			rest.V2rayJson(w, r)
-
-		case v2boxRegex.MatchString(userAgent):
-			rest.V2rayJson(w, r)
-
-		default:
-			if isBrowser(userAgent) {
-				rest.WebPage(w, r)
-				return
-			}
-			rest.Direct(w, r)
+		if isBrowser(userAgent) {
+			rest.WebPage(w, r)
+			return
 		}
+		rest.Direct(w, r)
 	}
 }
 
@@ -138,18 +89,4 @@ func isBrowser(userAgent string) bool {
 		}
 	}
 	return false
-}
-
-func compareVersions(version1, version2 string) int {
-	v1 := strings.Split(version1, ".")
-	v2 := strings.Split(version2, ".")
-
-	for i := 0; i < len(v1) && i < len(v2); i++ {
-		if v1[i] > v2[i] {
-			return 1
-		} else if v1[i] < v2[i] {
-			return -1
-		}
-	}
-	return 0
 }
