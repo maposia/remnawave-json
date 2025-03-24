@@ -32,11 +32,10 @@ type ResponseWrapper struct {
 }
 
 func GetSubscription(shortUuid string, header string) (*SubscriptionResponse, error) {
-	httpReq, err := http.NewRequest(http.MethodGet, config.GetRemnaweveURL()+"/api/sub/"+shortUuid+"/info", nil)
+	httpReq, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/sub/%s/info", config.GetRemnaweveURL(), shortUuid), nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
-
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("User-Agent", header)
 

@@ -23,6 +23,7 @@ func Start() {
 	r.HandleFunc("/{shortUuid}/v2ray-json", rest.V2rayJson).Methods("GET")
 	r.HandleFunc("/{shortUuid}/v2ray", rest.V2ray).Methods("GET")
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods("GET")
+	r.HandleFunc("/{shortUuid}/json", rest.Direct).Methods("GET")
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
