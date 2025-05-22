@@ -4,7 +4,7 @@ services:
     network_mode: host
     env_file:
       - .env
-#    volumes:
-#      - path/to/templates/v2ray/default.json:/app/templates/v2ray/default.json
-#      - path/to/templates/mux/default.json:/app/templates/mux/default.json
-#      - path/to/templates/mux/default.json:/app/templates/subscription/index.html
+    volumes:
+      - ./templates/v2ray/default.json:/app/templates/v2ray/default.json
+      - ./templates/mux/default.json:/app/templates/mux/default.json
+      - ./templates/mux/default.json:/app/templates/subscription/index.html
