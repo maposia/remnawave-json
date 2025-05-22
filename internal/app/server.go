@@ -77,6 +77,10 @@ func userAgentRouter() http.HandlerFunc {
 			rest.WebPage(w, r)
 			return
 		}
+		if strings.Contains(userAgent, "Streisand") {
+			rest.Streisand(w, r)
+			return
+		}
 		rest.Direct(w, r)
 	}
 }

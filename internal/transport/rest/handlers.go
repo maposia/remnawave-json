@@ -163,3 +163,40 @@ func WebPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка заполнения шаблона", http.StatusInternalServerError)
 	}
 }
+
+func Streisand(w http.ResponseWriter, r *http.Request) {
+	shortUuid := mux.Vars(r)["shortUuid"]
+
+	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid + "/v2ray-json"
+	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
+	if err != nil {
+		http.Error(w, "failed to create request", http.StatusInternalServerError)
+		return
+	}
+
+	for key, values := range r.Header {
+		for _, value := range values {
+			httpReq.Header.Add(key, value)
+		}
+	}
+
+	resp, err := config.GetHttpClient().Do(httpReq)
+	if err != nil {
+		http.Error(w, "failed to forward request", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	for key, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+
+	w.WriteHeader(resp.StatusCode)
+
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
+	}
+}
