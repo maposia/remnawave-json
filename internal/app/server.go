@@ -20,10 +20,7 @@ func Start() {
 
 	r.Use(httpsAndProxyMiddleware)
 
-	r.HandleFunc("/{shortUuid}/v2ray-json", rest.V2rayJson).Methods("GET")
-	r.HandleFunc("/{shortUuid}/v2ray", rest.V2ray).Methods("GET")
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods("GET")
-	r.HandleFunc("/{shortUuid}/json", rest.Direct).Methods("GET")
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
@@ -78,9 +75,15 @@ func userAgentRouter() http.HandlerFunc {
 			return
 		}
 		if strings.Contains(userAgent, "Streisand") {
-			rest.Streisand(w, r)
+			rest.V2rayJson(w, r)
 			return
 		}
+
+		if strings.Contains(userAgent, "Happ") && config.IsHappJsonEnabled() {
+			rest.HappJson(w, r)
+			return
+		}
+
 		rest.Direct(w, r)
 	}
 }

@@ -2,44 +2,16 @@ package rest
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/remnawave"
-	"remnawave-json/internal/service"
 	"time"
 )
-
-func V2rayJson(w http.ResponseWriter, r *http.Request) {
-	shortUuid := mux.Vars(r)["shortUuid"]
-	header := r.Header.Get("User-Agent")
-
-	jsonData, headers, err := service.GenerateJson(shortUuid, header)
-	if err != nil {
-		slog.Error("Get Json Error", err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-
-	jsonBytes, err := json.Marshal(jsonData)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	for key, values := range headers {
-		for _, value := range values {
-			w.Header().Set(key, value)
-		}
-	}
-
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(jsonBytes)
-	if err != nil {
-		return
-	}
-}
 
 func V2ray(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
@@ -164,7 +136,7 @@ func WebPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Streisand(w http.ResponseWriter, r *http.Request) {
+func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
 	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid + "/v2ray-json"
@@ -187,6 +159,15 @@ func Streisand(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
+	body, err := io.ReadAll(resp.Body)
+	data, err := DecodeJSON(body)
+	if err != nil {
+		log.Printf("JSON parse error: %v", err)
+	} else {
+		if config.IsMuxEnabled() {
+			InsertMux(data)
+		}
+	}
 	for key, values := range resp.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
@@ -195,8 +176,51 @@ func Streisand(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(resp.StatusCode)
 
-	_, err = io.Copy(w, resp.Body)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+	}
+}
+
+func HappJson(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("routing", config.GetHappRouting())
+	r.Header.Set("User-Agent", "Streisand")
+	V2rayJson(w, r)
+}
+
+func DecodeJSON(body []byte) (interface{}, error) {
+	var data interface{}
+	err := json.Unmarshal(body, &data)
 	if err != nil {
-		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
+		return nil, fmt.Errorf("failed to decode JSON: %w", err)
+	}
+	return data, nil
+}
+
+func InsertMux(data interface{}) {
+	if arr, ok := data.([]interface{}); ok {
+		for _, v := range arr {
+			InsertMux(v)
+		}
+		return
+	}
+
+	if m, ok := data.(map[string]interface{}); ok {
+		if outbounds, exists := m["outbounds"]; exists {
+			if obs, ok := outbounds.([]interface{}); ok {
+				for _, ob := range obs {
+					if obMap, ok := ob.(map[string]interface{}); ok {
+						if tag, hasTag := obMap["tag"]; hasTag && tag == "proxy" {
+							if protocol, hasProtocol := obMap["protocol"]; hasProtocol && protocol == "vless" {
+								obMap["mux"] = config.GetV2RayMuxTemplate()
+							}
+
+						}
+					}
+				}
+			}
+		}
+		for _, v := range m {
+			InsertMux(v)
+		}
 	}
 }
