@@ -65,6 +65,9 @@ func GetV2RayTemplate() map[string]interface{} {
 func GetHttpClient() *http.Client {
 	return conf.httpClient
 }
+func GetMode() string {
+	return os.Getenv("MODE")
+}
 
 var conf config
 
@@ -75,6 +78,11 @@ type decompressingRoundTripper struct {
 func (d *decompressingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Запрашиваем все популярные кодеки
 	req.Header.Set("Accept-Encoding", "gzip, deflate, br, zstd")
+
+	if GetMode() == "local" {
+		req.Header.Set("x-forwarded-for", "127.0.0.1")
+		req.Header.Set("x-forwarded-proto", "https")
+	}
 
 	resp, err := d.rt.RoundTrip(req)
 	if err != nil {
