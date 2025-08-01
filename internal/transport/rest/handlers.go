@@ -183,7 +183,7 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 
 func HappJson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("routing", config.GetHappRouting())
-	r.Header.Set("User-Agent", "Streisand")
+	r.Header.Set("User-Agent", r.Header.Get("User-Agent"))
 	V2rayJson(w, r)
 }
 
