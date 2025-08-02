@@ -3,7 +3,6 @@ package config
 import (
 	"compress/flate"
 	"compress/gzip"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/andybalholm/brotli"
@@ -19,22 +18,15 @@ import (
 )
 
 type config struct {
-	v2RayTemplate     map[string]interface{}
-	v2rayMuxEnabled   bool
-	v2RayMuxTemplate  map[string]interface{}
-	remnaweveURL      string
-	appHost           string
-	appPort           string
-	webPageTemplate   *template.Template
-	happJsonEnabled   bool
-	happRouting       string
-	happAnnouncements string
-	httpClient        *http.Client
+	remnaweveURL    string
+	appHost         string
+	appPort         string
+	webPageTemplate *template.Template
+	happJsonEnabled bool
+	happRouting     string
+	httpClient      *http.Client
 }
 
-func GetHappAnnouncements() string {
-	return conf.happAnnouncements
-}
 func IsHappJsonEnabled() bool {
 	return conf.happJsonEnabled
 }
@@ -52,15 +44,6 @@ func GetAppHost() string {
 }
 func GetRemnaweveURL() string {
 	return conf.remnaweveURL
-}
-func IsMuxEnabled() bool {
-	return conf.v2rayMuxEnabled
-}
-func GetV2RayMuxTemplate() map[string]interface{} {
-	return conf.v2RayMuxTemplate
-}
-func GetV2RayTemplate() map[string]interface{} {
-	return conf.v2RayTemplate
 }
 func GetHttpClient() *http.Client {
 	return conf.httpClient
@@ -128,21 +111,6 @@ func InitConfig() {
 		},
 	}
 
-	v2rayTemplatePath := os.Getenv("V2RAY_TEMPLATE_PATH")
-	if v2rayTemplatePath == "" {
-		v2rayTemplatePath = "/app/templates/v2ray/default.json"
-	}
-	if _, err := os.Stat(v2rayTemplatePath); os.IsNotExist(err) {
-		slog.Error("File does not exist: %s", v2rayTemplatePath)
-		panic(err)
-	}
-	data, err := os.ReadFile(v2rayTemplatePath)
-	if err != nil {
-		slog.Error("Error reading file:")
-		panic(err)
-	}
-	conf.v2RayTemplate = ConvertJsonStringIntoMap(string(data))
-
 	webPageTemplatePath := os.Getenv("WEB_PAGE_TEMPLATE_PATH")
 	if webPageTemplatePath == "" {
 		webPageTemplatePath = "/app/templates/subscription/index.html"
@@ -156,33 +124,10 @@ func InitConfig() {
 
 	conf.happRouting = os.Getenv("HAPP_ROUTING")
 
-	announce := os.Getenv("HAPP_ANNOUNCEMENTS")
-	conf.happAnnouncements = "base64:" + base64.StdEncoding.EncodeToString([]byte(announce))
-
 	conf.webPageTemplate, err = template.ParseFiles(webPageTemplatePath)
 	if err != nil {
 		slog.Error("parsing web page template file:")
 		panic(err)
-	}
-
-	conf.v2rayMuxEnabled = os.Getenv("V2RAY_MUX_ENABLED") == "true"
-
-	if conf.v2rayMuxEnabled {
-		v2rayMuxTemplatePath := os.Getenv("V2RAY_MUX_TEMPLATE_PATH")
-		if v2rayMuxTemplatePath == "" {
-			v2rayMuxTemplatePath = "/app/templates/mux/default.json"
-		}
-		if _, err := os.Stat(v2rayMuxTemplatePath); os.IsNotExist(err) {
-			slog.Error("Mux template file does not exist: %s", v2rayMuxTemplatePath)
-			panic(err)
-		}
-		muxData, err := os.ReadFile(v2rayMuxTemplatePath)
-		if err != nil {
-			slog.Error("Error reading V2ray Mux template file")
-			panic(err)
-		}
-		conf.v2RayMuxTemplate = ConvertJsonStringIntoMap(string(muxData))
-
 	}
 
 	conf.remnaweveURL = os.Getenv("REMNAWAVE_URL")

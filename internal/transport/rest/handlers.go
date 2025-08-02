@@ -1,11 +1,8 @@
 package rest
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gorilla/mux"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
@@ -159,15 +156,6 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	data, err := DecodeJSON(body)
-	if err != nil {
-		log.Printf("JSON parse error: %v", err)
-	} else {
-		if config.IsMuxEnabled() {
-			InsertMux(data)
-		}
-	}
 	for key, values := range resp.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
@@ -176,8 +164,9 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(resp.StatusCode)
 
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
 	}
 }
 
@@ -185,42 +174,4 @@ func HappJson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("routing", config.GetHappRouting())
 	r.Header.Set("User-Agent", r.Header.Get("User-Agent"))
 	V2rayJson(w, r)
-}
-
-func DecodeJSON(body []byte) (interface{}, error) {
-	var data interface{}
-	err := json.Unmarshal(body, &data)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode JSON: %w", err)
-	}
-	return data, nil
-}
-
-func InsertMux(data interface{}) {
-	if arr, ok := data.([]interface{}); ok {
-		for _, v := range arr {
-			InsertMux(v)
-		}
-		return
-	}
-
-	if m, ok := data.(map[string]interface{}); ok {
-		if outbounds, exists := m["outbounds"]; exists {
-			if obs, ok := outbounds.([]interface{}); ok {
-				for _, ob := range obs {
-					if obMap, ok := ob.(map[string]interface{}); ok {
-						if tag, hasTag := obMap["tag"]; hasTag && tag == "proxy" {
-							if protocol, hasProtocol := obMap["protocol"]; hasProtocol && protocol == "vless" {
-								obMap["mux"] = config.GetV2RayMuxTemplate()
-							}
-
-						}
-					}
-				}
-			}
-		}
-		for _, v := range m {
-			InsertMux(v)
-		}
-	}
 }
