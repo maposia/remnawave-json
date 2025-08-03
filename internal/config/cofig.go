@@ -18,13 +18,14 @@ import (
 )
 
 type config struct {
-	remnaweveURL    string
-	appHost         string
-	appPort         string
-	webPageTemplate *template.Template
-	happJsonEnabled bool
-	happRouting     string
-	httpClient      *http.Client
+	remnaweveURL               string
+	appHost                    string
+	appPort                    string
+	webPageTemplate            *template.Template
+	happJsonEnabled            bool
+	happRouting                string
+	httpClient                 *http.Client
+	ruOutboundName, ruHostName string
 }
 
 func IsHappJsonEnabled() bool {
@@ -50,6 +51,14 @@ func GetHttpClient() *http.Client {
 }
 func GetMode() string {
 	return os.Getenv("MODE")
+}
+
+func GetRuHostName() string {
+	return conf.ruHostName
+}
+
+func GetRuOutboundName() string {
+	return conf.ruOutboundName
 }
 
 var conf config
@@ -124,6 +133,9 @@ func InitConfig() {
 
 	conf.happRouting = os.Getenv("HAPP_ROUTING")
 
+	conf.ruHostName = os.Getenv("RU_USER_HOST")
+	conf.ruOutboundName = os.Getenv("RU_OUTBOUND_NAME")
+
 	conf.webPageTemplate, err = template.ParseFiles(webPageTemplatePath)
 	if err != nil {
 		slog.Error("parsing web page template file:")
@@ -153,4 +165,8 @@ func ConvertJsonStringIntoMap(jsonStr string) map[string]interface{} {
 		log.Fatal("Error unmarshaling JSON:", err)
 	}
 	return config
+}
+
+func GetRemnawaveToken() any {
+	return os.Getenv("REMNAWAVE_TOKEN")
 }
