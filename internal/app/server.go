@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/transport/rest"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 var server *http.Server
@@ -20,7 +21,7 @@ func Start() {
 
 	r.Use(httpsAndProxyMiddleware)
 
-	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods("GET")
+	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
@@ -45,7 +46,6 @@ func Stop() {
 			panic(err)
 		}
 	}
-
 }
 
 func httpsAndProxyMiddleware(next http.Handler) http.Handler {

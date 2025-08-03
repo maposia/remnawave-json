@@ -2,28 +2,32 @@
 
 This application serves as a **proxy** for generating and serving **V2Ray subscription configurations** based on `User-Agent`. It dynamically provides the correct configuration format depending on the client version, ensuring seamless compatibility across different applications.
 
-Work with https://remna.st
+Work with <https://remna.st>
 
-🇷🇺 [Happ Routing](https://github.com/hydraponique/roscomvpn-happ-routing/tree/main)
----
+## 🇷🇺 [Happ Routing](https://github.com/hydraponique/roscomvpn-happ-routing/tree/main)
 
 ## ✨ Features
+
 - **🔀 User-Agent-Based Routing**
-   - Automatically detects and serves the correct subscription format for supported clients:
-      - **Streisand** (JSON)
-      - **Happ** (JSON & Share link)
+  - Automatically detects and serves the correct subscription format for supported clients:
+    - **Streisand** (JSON)
+    - **Happ** (JSON & Share link)
 - **Web page template**
   - Supported web page template.
 - **🌍 Direct Proxy Fallback**
-   - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
-   - Supported v2ray base64 linkgs /v2ray
+  - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
+  - Supported v2ray base64 linkgs /v2ray
 
 ---
+
 ## Base web page
-![exmaple.png](exmaple.png)
----
+
+## ![example.png](exmaple.png)
+
 ## ⚙️ Configuration
+
 Modify `.env.sample` to adjust the application settings:
+
 ```
 REMNAWAVE_URL=sub_domain
 APP_PORT=4000
@@ -34,6 +38,7 @@ APP_PORT=4000
 ```
 
 After modifying execute this
+
 ```bash
 mv .env.sample .env
 ```
@@ -43,36 +48,45 @@ mv .env.sample .env
 # How to Run
 
 1. Clone the repo
+
 ```bash
 git clone https://github.com/Jolymmiles/remnawave-json
 ```
 
 2. Go to the cloned repo
+
 ```bash
 cd remnawave-json
 ```
+
 3. Configure .env
 
 4. Run Docker Compose
+
 ```bash
 docker compose up -d
 ```
+
 ---
 
 # How to update
 
 1. Go to directory with docker-compose.yaml
+
 ```bash
 remnawave-json
 ```
+
 2. Update image
+
 ```bash
-docker compose pull 
+docker compose pull
 ```
 
 3. Restart container
+
 ```bash
-docker compose down --remove-orphans && docker compose up -d 
+docker compose down --remove-orphans && docker compose up -d
 ```
 
 ---
@@ -116,21 +130,21 @@ docker compose down --remove-orphans && docker compose up -d
    _Example:_ `HAPP_ANNOUNCEMENTS=zalupa`
 
 10. **RU_OUTBOUND_NAME**  
-   _Description:_ RU outbound name.
-   _Example:_ `RU_OUTBOUND_NAME=RU`
+    _Description:_ RU outbound name.
+    _Example:_ `RU_OUTBOUND_NAME=RU`
 
 11. **RU_USER_HOST**  
-   _Description:_ RU user host.
-   _Example:_ `RU_USER_HOST=Россия`
+    _Description:_ RU user host.
+    _Example:_ `RU_USER_HOST=Россия`
 
 12. **REMNAWAVE_TOKEN**  
-   _Description:_ REMNAWAVE token.
-   _Example:_ `REMNAWAVE_TOKEN=zalupa`
-
+    _Description:_ REMNAWAVE token.
+    _Example:_ `REMNAWAVE_TOKEN=zalupa`
 
 ---
 
 ## Nginx example
+
 ```nginx configuration
 server
 {
@@ -178,9 +192,8 @@ server
  }
 ```
 
-
 ## 📜 License
-This project is open-source and available under the **MIT License**.
 
-🚀 *Enhance your V2Ray subscription management with automated User-Agent routing!*
+This project is open-source and available under the **AGPL v2.0**.
 
+🚀 _Enhance your V2Ray subscription management with automated User-Agent routing!_

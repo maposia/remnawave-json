@@ -5,9 +5,6 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"errors"
-	"github.com/andybalholm/brotli"
-	"github.com/joho/godotenv"
-	"github.com/klauspost/compress/zstd"
 	"html/template"
 	"io"
 	"log"
@@ -15,6 +12,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/andybalholm/brotli"
+	"github.com/joho/godotenv"
+	"github.com/klauspost/compress/zstd"
 )
 
 type config struct {
@@ -31,24 +32,31 @@ type config struct {
 func IsHappJsonEnabled() bool {
 	return conf.happJsonEnabled
 }
+
 func GetHappRouting() string {
 	return conf.happRouting
 }
+
 func GetAppPort() string {
 	return conf.appPort
 }
+
 func GetWebPageTemplate() *template.Template {
 	return conf.webPageTemplate
 }
+
 func GetAppHost() string {
 	return conf.appHost
 }
+
 func GetRemnaweveURL() string {
 	return conf.remnaweveURL
 }
+
 func GetHttpClient() *http.Client {
 	return conf.httpClient
 }
+
 func GetMode() string {
 	return os.Getenv("MODE")
 }
@@ -125,7 +133,7 @@ func InitConfig() {
 		webPageTemplatePath = "/app/templates/subscription/index.html"
 	}
 	if _, err := os.Stat(webPageTemplatePath); os.IsNotExist(err) {
-		slog.Error("File does not exist: %s", webPageTemplatePath)
+		slog.Error("File does not exist: " + webPageTemplatePath)
 		panic(err)
 	}
 
