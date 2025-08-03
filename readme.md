@@ -10,14 +10,8 @@ Work with https://remna.st
 ## ✨ Features
 - **🔀 User-Agent-Based Routing**
    - Automatically detects and serves the correct subscription format for supported clients:
-      - **v2rayN** (`>=6.40` JSON, older versions Base64)
-      - **v2rayNG** (`>=1.8.29` JSON, older versions Base64)
       - **Streisand** (JSON)
       - **Happ** (JSON & Share link)
-      - **V2Box** (JSON)
-      - **Npv Tunnel** (JSON)
-- **🛠 Mux support**
-   - Supported `mux` template.
 - **Web page template**
   - Supported web page template.
 - **🌍 Direct Proxy Fallback**
@@ -120,6 +114,19 @@ docker compose down --remove-orphans && docker compose up -d
 9. **HAPP_ANNOUNCEMENTS**  
    _Description:_ Announcement text. It can be provided in plain text.
    _Example:_ `HAPP_ANNOUNCEMENTS=zalupa`
+
+10. **RU_OUTBOUND_NAME**  
+   _Description:_ RU outbound name.
+   _Example:_ `RU_OUTBOUND_NAME=RU`
+
+11. **RU_USER_HOST**  
+   _Description:_ RU user host.
+   _Example:_ `RU_USER_HOST=Россия`
+
+12. **REMNAWAVE_TOKEN**  
+   _Description:_ REMNAWAVE token.
+   _Example:_ `REMNAWAVE_TOKEN=zalupa`
+
 
 ---
 
