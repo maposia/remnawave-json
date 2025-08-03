@@ -35,6 +35,8 @@ APP_PORT=4000
 # V2RAY_MUX_ENABLED=true
 # V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json
 # WEB_PAGE_TEMPLATE_PATH=/app/templates/subscription/index.html
+META_TITLE=Zalupa
+META_DESCRIPTION=Pupa
 ```
 
 After modifying execute this
@@ -140,6 +142,14 @@ docker compose down --remove-orphans && docker compose up -d
 12. **REMNAWAVE_TOKEN**  
     _Description:_ REMNAWAVE token.
     _Example:_ `REMNAWAVE_TOKEN=zalupa`
+
+13. **MetaDescription**  
+    _Description:_ MetaDescription.
+    _Example:_ `MetaDescription=Zalupa`
+
+14. **MetaTitle**  
+    _Description:_ MetaTitle.
+    _Example:_ `MetaTitle=Zalupa`
 
 ---
 

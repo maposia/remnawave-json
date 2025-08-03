@@ -178,3 +178,11 @@ func ConvertJsonStringIntoMap(jsonStr string) map[string]interface{} {
 func GetRemnawaveToken() any {
 	return os.Getenv("REMNAWAVE_TOKEN")
 }
+
+func GetMetaTitle() string {
+	return os.Getenv("META_TITLE")
+}
+
+func GetMetaDescription() string {
+	return os.Getenv("META_DESCRIPTION")
+}

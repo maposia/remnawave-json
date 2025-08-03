@@ -1,57 +1,17 @@
 package rest
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/remnawave"
-	"time"
-
-	"github.com/gorilla/mux"
 )
-
-func V2ray(w http.ResponseWriter, r *http.Request) {
-	shortUuid := mux.Vars(r)["shortUuid"]
-
-	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid
-	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
-	if err != nil {
-		http.Error(w, "failed to create request", http.StatusInternalServerError)
-		return
-	}
-
-	for key, values := range r.Header {
-		for _, value := range values {
-			httpReq.Header.Add(key, value)
-		}
-	}
-
-	httpReq.Header.Add("Content-Type", "text/plain; charset=utf-8")
-
-	resp, err := config.GetHttpClient().Do(httpReq)
-	if err != nil {
-		http.Error(w, "failed to forward request", http.StatusBadGateway)
-		return
-	}
-	defer resp.Body.Close()
-
-	for key, values := range resp.Header {
-		for _, value := range values {
-			w.Header().Add(key, value)
-		}
-	}
-
-	w.WriteHeader(resp.StatusCode)
-
-	_, err = io.Copy(w, resp.Body)
-	if err != nil {
-		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
-	}
-}
 
 func Direct(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
@@ -110,27 +70,27 @@ func WebPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var expireFormatted string
-	if sub.User.ExpiresAt != "" {
-		expireTime, err := time.Parse(time.RFC3339, sub.User.ExpiresAt)
-		if err != nil {
-			slog.Error("Invalid date format", err)
-			expireFormatted = ""
-		} else {
-			expireFormatted = expireTime.Format(time.RFC3339)
-		}
+	wrapped := struct {
+		Response interface{} `json:"response"`
+	}{
+		Response: sub,
 	}
 
-	user := WebPageUser{
-		Status:          sub.User.UserStatus,
-		ExpireFormatted: expireFormatted,
-		UsedTraffic:     sub.User.TrafficUsed,
-		DataLimit:       sub.User.TrafficLimit,
-		SubscriptionURL: sub.SubscriptionUrl,
-		Username:        sub.User.Username,
+	jsonData, err := json.Marshal(wrapped)
+	if err != nil {
+		http.Error(w, "Ошибка сериализации JSON", http.StatusInternalServerError)
+		return
 	}
 
-	err = config.GetWebPageTemplate().Execute(w, user)
+	panelDataB64 := base64.StdEncoding.EncodeToString(jsonData)
+
+	data := struct {
+		MetaTitle, MetaDescription, PanelData string
+	}{
+		PanelData: panelDataB64, MetaTitle: config.GetMetaTitle(), MetaDescription: config.GetMetaDescription(),
+	}
+
+	err = config.GetWebPageTemplate().Execute(w, data)
 	if err != nil {
 		http.Error(w, "Ошибка заполнения шаблона", http.StatusInternalServerError)
 	}
