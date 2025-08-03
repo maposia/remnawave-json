@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"log/slog"
@@ -11,6 +10,8 @@ import (
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/remnawave"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func V2ray(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +51,6 @@ func V2ray(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "failed to copy response body", http.StatusInternalServerError)
 	}
-
 }
 
 func Direct(w http.ResponseWriter, r *http.Request) {
@@ -160,6 +160,11 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "failed to read response body", http.StatusInternalServerError)
+		return
+	}
+
 	data, err := DecodeJSON(body)
 	if err != nil {
 		log.Printf("JSON parse error: %v", err)
