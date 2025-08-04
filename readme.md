@@ -150,6 +150,9 @@ docker compose down --remove-orphans && docker compose up -d
 14. **MetaTitle**  
     _Description:_ MetaTitle.
     _Example:_ `MetaTitle=Zalupa`
+15. **MODE****
+    _Description:_ Set if use remnawave:3000.
+    _Example:_ `MODE=local`
 
 ---
 
