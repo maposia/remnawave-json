@@ -4,6 +4,8 @@ This application serves as a **proxy** for generating and serving **V2Ray subscr
 
 Work with <https://remna.st>
 
+For use your own web page template, use {{.MetaTitle}} {{.MetaDescription}} {{.PanelData}} to get panel data and other.
+
 ## 🇷🇺 [Happ Routing](https://github.com/hydraponique/roscomvpn-happ-routing/tree/main)
 
 ## ✨ Features
