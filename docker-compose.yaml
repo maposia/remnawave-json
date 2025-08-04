@@ -5,7 +5,5 @@ services:
     env_file:
       - .env
     volumes:
-      - ./templates/v2ray/default.json:/app/templates/v2ray/default.json
-      - ./templates/mux/default.json:/app/templates/mux/default.json
       - ./templates/subscription/index.html:/app/templates/subscription/index.html
       - ./templates/assets/app-config.json:/app/templates/assets/app-config.json
