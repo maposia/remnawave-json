@@ -11,12 +11,11 @@ Work with <https://remna.st>
 - **🔀 User-Agent-Based Routing**
   - Automatically detects and serves the correct subscription format for supported clients:
     - **Streisand** (JSON)
-    - **Happ** (JSON & Share link)
+    - **Happ** (JSON)
 - **Web page template**
   - Supported web page template.
 - **🌍 Direct Proxy Fallback**
-  - If `User-Agent` is unsupported or the request doesn’t match `/v2ray-json`, the server provides a **default proxy response**.
-  - Supported v2ray base64 linkgs /v2ray
+  - If `User-Agent` is unsupported, the server provides a **default proxy response**.
 
 ---
 
@@ -33,6 +32,8 @@ APP_PORT=4000
 # WEB_PAGE_TEMPLATE_PATH=/app/templates/subscription/index.html
 META_TITLE=Zalupa
 META_DESCRIPTION=Pupa
+REMNAWAVE_TOKEN=
+MODE=
 ```
 
 After modifying execute this
