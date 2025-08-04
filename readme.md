@@ -20,10 +20,6 @@ Work with <https://remna.st>
 
 ---
 
-## Base web page
-
-## ![example.png](exmaple.png)
-
 ## ⚙️ Configuration
 
 Modify `.env.sample` to adjust the application settings:
