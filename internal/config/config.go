@@ -134,7 +134,7 @@ func InitConfig() {
 
 	webPageTemplatePath := os.Getenv("WEB_PAGE_TEMPLATE_PATH")
 	if webPageTemplatePath == "" {
-		webPageTemplatePath = "/app/templates/subscription/index3.html"
+		webPageTemplatePath = "/app/templates/subscription/index.html"
 	}
 	if _, err := os.Stat(webPageTemplatePath); os.IsNotExist(err) {
 		slog.Error("File does not exist: " + webPageTemplatePath)
