@@ -92,6 +92,7 @@ func WebPage(w http.ResponseWriter, r *http.Request) {
 
 	err = config.GetWebPageTemplate().Execute(w, data)
 	if err != nil {
+		slog.Error("Execute Json Error", err)
 		http.Error(w, "Ошибка заполнения шаблона", http.StatusInternalServerError)
 	}
 }
@@ -141,6 +142,10 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
+
+	if _, exists := config.GetExceptRuRulesUsers()[shortUuid]; exists {
+		data = CleanRURules(data)
+	}
 	for key, values := range resp.Header {
 		for _, value := range values {
 			w.Header().Add(key, value)
@@ -152,6 +157,41 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
 	}
+}
+func CleanRURules(data interface{}) interface{} {
+	arr, ok := data.([]interface{})
+	if !ok {
+		return data
+	}
+
+	for i, v := range arr {
+		obj, ok := v.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		routing, ok := obj["routing"].(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		if rules, ok := routing["rules"].([]interface{}); ok {
+			filtered := make([]interface{}, 0, len(rules))
+			for _, r := range rules {
+				if rule, ok := r.(map[string]interface{}); ok {
+					if tag, ok := rule["outboundTag"].(string); ok && tag == "RU" {
+						continue
+					}
+				}
+				filtered = append(filtered, r)
+			}
+			routing["rules"] = filtered
+		}
+
+		arr[i] = obj
+	}
+
+	return arr
 }
 
 func HappJson(w http.ResponseWriter, r *http.Request) {

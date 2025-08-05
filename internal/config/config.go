@@ -27,8 +27,12 @@ type config struct {
 	happRouting                string
 	httpClient                 *http.Client
 	ruOutboundName, ruHostName string
+	exceptRuRulesUsers         map[string]string
 }
 
+func GetExceptRuRulesUsers() map[string]string {
+	return conf.exceptRuRulesUsers
+}
 func IsHappJsonEnabled() bool {
 	return conf.happJsonEnabled
 }
@@ -130,7 +134,7 @@ func InitConfig() {
 
 	webPageTemplatePath := os.Getenv("WEB_PAGE_TEMPLATE_PATH")
 	if webPageTemplatePath == "" {
-		webPageTemplatePath = "/app/templates/subscription/index.html"
+		webPageTemplatePath = "/app/templates/subscription/index3.html"
 	}
 	if _, err := os.Stat(webPageTemplatePath); os.IsNotExist(err) {
 		slog.Error("File does not exist: " + webPageTemplatePath)
@@ -143,6 +147,16 @@ func InitConfig() {
 
 	conf.ruHostName = os.Getenv("RU_USER_HOST")
 	conf.ruOutboundName = os.Getenv("RU_OUTBOUND_NAME")
+
+	conf.exceptRuRulesUsers = make(map[string]string)
+	envVal := os.Getenv("EXCEPT_RU_RULES_USERS")
+
+	for _, v := range strings.Split(envVal, ",") {
+		v = strings.TrimSpace(v)
+		if v != "" {
+			conf.exceptRuRulesUsers[v] = ""
+		}
+	}
 
 	conf.webPageTemplate, err = template.ParseFiles(webPageTemplatePath)
 	if err != nil {
@@ -164,6 +178,7 @@ func InitConfig() {
 		slog.Error("app port not found")
 		panic(errors.New("app port not found"))
 	}
+
 }
 
 func ConvertJsonStringIntoMap(jsonStr string) map[string]interface{} {
