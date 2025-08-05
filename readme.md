@@ -1,6 +1,8 @@
 ### 📖 V2Ray Json Subscription Proxy with User-Agent Routing
 
-This application serves as a **proxy** for generating and serving **V2Ray subscription configurations** based on `User-Agent`. It dynamically provides the correct configuration format depending on the client version, ensuring seamless compatibility across different applications.
+This application serves as a **proxy** for generating and serving **V2Ray subscription configurations** based on
+`User-Agent`. It dynamically provides the correct configuration format depending on the client version, ensuring
+seamless compatibility across different applications.
 
 Work with <https://remna.st>
 
@@ -11,13 +13,13 @@ For use your own web page template, use {{.MetaTitle}} {{.MetaDescription}} {{.P
 ## ✨ Features
 
 - **🔀 User-Agent-Based Routing**
-  - Automatically detects and serves the correct subscription format for supported clients:
-    - **Streisand** (JSON)
-    - **Happ** (JSON)
+    - Automatically detects and serves the correct subscription format for supported clients:
+        - **Streisand** (JSON)
+        - **Happ** (JSON)
 - **Web page template**
-  - Supported web page template.
+    - Supported web page template.
 - **🌍 Direct Proxy Fallback**
-  - If `User-Agent` is unsupported, the server provides a **default proxy response**.
+    - If `User-Agent` is unsupported, the server provides a **default proxy response**.
 
 ---
 
@@ -94,64 +96,24 @@ docker compose down --remove-orphans && docker compose up -d
 
 ## 🌿 **Environment Variables**
 
-1. **REMNAWAVE_URL**  
-   _Description:_ The base URL for the subdomain. [Installation Environment Variables](https://remna.st/installation/env#subscription-public-domain)  
-   _Example:_ `REMNAWAVE_URL=https://panel.com`
-
-2. **APP_PORT**  
-   _Description:_ The port on which the application will run.  
-   _Example:_ `APP_PORT=4000`
-
-3. **V2RAY_TEMPLATE_PATH**  
-   _Description:_ The file path to the default V2Ray configuration template.  
-   _Example:_ `V2RAY_TEMPLATE_PATH=/app/templates/v2ray/default.json`
-
-4. **V2RAY_MUX_ENABLED**  
-   _Description:_ A flag to enable or disable the V2Ray Mux feature. Set to `true` to enable Mux.  
-   _Example:_ `V2RAY_MUX_ENABLED=true`
-
-5. **V2RAY_MUX_TEMPLATE_PATH**  
-   _Description:_ The file path to the V2Ray Mux configuration template.  
-   _Example:_ `V2RAY_MUX_TEMPLATE_PATH=/app/templates/v2ray/mux_default.json`
-
-6. **WEB_PAGE_TEMPLATE_PATH**  
-   _Description:_ The file path to the subscription template.  
-   _Example:_ `WEB_PAGE_TEMPLATE_PATH=/app/templates/subscription/index.html`
-
-7. **HAPP_JSON_ENABLED**  
-   _Description:_ A flag to enable or disable JSON output for Happ.  
-   _Example:_ `HAPP_JSON_ENABLED=false`
-
-8. **HAPP_ROUTING**  
-   _Description:_ The routing path for Happ connections.  
-   _Example:_ `HAPP_ROUTING=happ://routing/...`
-
-9. **HAPP_ANNOUNCEMENTS**  
-   _Description:_ Announcement text. It can be provided in plain text.
-   _Example:_ `HAPP_ANNOUNCEMENTS=zalupa`
-
-10. **RU_OUTBOUND_NAME**  
-    _Description:_ RU outbound name.
-    _Example:_ `RU_OUTBOUND_NAME=RU`
-
-11. **RU_USER_HOST**  
-    _Description:_ RU user host.
-    _Example:_ `RU_USER_HOST=Россия`
-
-12. **REMNAWAVE_TOKEN**  
-    _Description:_ REMNAWAVE token.
-    _Example:_ `REMNAWAVE_TOKEN=zalupa`
-
-13. **MetaDescription**  
-    _Description:_ MetaDescription.
-    _Example:_ `MetaDescription=Zalupa`
-
-14. **MetaTitle**  
-    _Description:_ MetaTitle.
-    _Example:_ `MetaTitle=Zalupa`
-15. **MODE****
-    _Description:_ Set if use remnawave:3000.
-    _Example:_ `MODE=local`
+| Variable Name           | Description                                                          | Example Value                            |
+|-------------------------|----------------------------------------------------------------------|------------------------------------------|
+| REMNAWAVE_URL           | The base URL for the subdomain                                       | `https://panel.com`                      |
+| APP_PORT                | The port on which the application will run                           | `4000`                                   |
+| V2RAY_TEMPLATE_PATH     | The file path to the default V2Ray configuration template            | `/app/templates/v2ray/default.json`      |
+| V2RAY_MUX_ENABLED       | A flag to enable or disable the V2Ray Mux feature                    | `true`                                   |
+| V2RAY_MUX_TEMPLATE_PATH | The file path to the V2Ray Mux configuration template                | `/app/templates/v2ray/mux_default.json`  |
+| WEB_PAGE_TEMPLATE_PATH  | The file path to the subscription template                           | `/app/templates/subscription/index.html` |
+| HAPP_JSON_ENABLED       | A flag to enable or disable JSON output for Happ                     | `false`                                  |
+| HAPP_ROUTING            | The routing path for Happ connections                                | `happ://routing/...`                     |
+| HAPP_ANNOUNCEMENTS      | Announcement text in plain text                                      | `zalupa`                                 |
+| RU_OUTBOUND_NAME        | RU outbound name                                                     | `RU`                                     |
+| RU_USER_HOST            | RU user host                                                         | `Россия`                                 |
+| REMNAWAVE_TOKEN         | REMNAWAVE token                                                      | `zalupa`                                 |
+| MetaDescription         | MetaDescription                                                      | `Zalupa`                                 |
+| MetaTitle               | MetaTitle                                                            | `Zalupa`                                 |
+| MODE                    | Set if using remnawave:3000                                          | `local`                                  |
+| EXCEPT_RU_RULES_USERS   | Set subscription short uuid for exclude routing via RU_OUTBOUND_NAME | `c11JfduMqrkBZrTZ`                       |
 
 ---
 
