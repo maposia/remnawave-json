@@ -96,24 +96,21 @@ docker compose down --remove-orphans && docker compose up -d
 
 ## 🌿 **Environment Variables**
 
-| Variable Name           | Description                                                          | Example Value                            |
-|-------------------------|----------------------------------------------------------------------|------------------------------------------|
-| REMNAWAVE_URL           | The base URL for the subdomain                                       | `https://panel.com`                      |
-| APP_PORT                | The port on which the application will run                           | `4000`                                   |
-| V2RAY_TEMPLATE_PATH     | The file path to the default V2Ray configuration template            | `/app/templates/v2ray/default.json`      |
-| V2RAY_MUX_ENABLED       | A flag to enable or disable the V2Ray Mux feature                    | `true`                                   |
-| V2RAY_MUX_TEMPLATE_PATH | The file path to the V2Ray Mux configuration template                | `/app/templates/v2ray/mux_default.json`  |
-| WEB_PAGE_TEMPLATE_PATH  | The file path to the subscription template                           | `/app/templates/subscription/index.html` |
-| HAPP_JSON_ENABLED       | A flag to enable or disable JSON output for Happ                     | `false`                                  |
-| HAPP_ROUTING            | The routing path for Happ connections                                | `happ://routing/...`                     |
-| HAPP_ANNOUNCEMENTS      | Announcement text in plain text                                      | `zalupa`                                 |
-| RU_OUTBOUND_NAME        | RU outbound name                                                     | `RU`                                     |
-| RU_USER_HOST            | RU user host                                                         | `Россия`                                 |
-| REMNAWAVE_TOKEN         | REMNAWAVE token                                                      | `zalupa`                                 |
-| MetaDescription         | MetaDescription                                                      | `Zalupa`                                 |
-| MetaTitle               | MetaTitle                                                            | `Zalupa`                                 |
-| MODE                    | Set if using remnawave:3000                                          | `local`                                  |
-| EXCEPT_RU_RULES_USERS   | Set subscription short uuid for exclude routing via RU_OUTBOUND_NAME | `c11JfduMqrkBZrTZ`                       |
+| Variable Name          | Description                                                          | Example Value                            |
+|------------------------|----------------------------------------------------------------------|------------------------------------------|
+| REMNAWAVE_URL          | The base URL for the subdomain                                       | `https://panel.com`                      |
+| APP_PORT               | The port on which the application will run                           | `4000`                                   |
+| WEB_PAGE_TEMPLATE_PATH | The file path to the subscription template                           | `/app/templates/subscription/index.html` |
+| HAPP_JSON_ENABLED      | A flag to enable or disable JSON output for Happ                     | `false`                                  |
+| HAPP_ROUTING           | The routing path for Happ connections                                | `happ://routing/...`                     |
+| HAPP_ANNOUNCEMENTS     | Announcement text in plain text                                      | `zalupa`                                 |
+| RU_OUTBOUND_NAME       | RU outbound name                                                     | `RU`                                     |
+| RU_USER_HOST           | RU user host                                                         | `Россия`                                 |
+| REMNAWAVE_TOKEN        | REMNAWAVE token                                                      | `zalupa`                                 |
+| MetaDescription        | MetaDescription for web page                                         | `Zalupa`                                 |
+| MetaTitle              | MetaTitle for web page                                               | `Zalupa`                                 |
+| MODE                   | Set if using remnawave:3000                                          | `local`                                  |
+| EXCEPT_RU_RULES_USERS  | Set subscription short uuid for exclude routing via RU_OUTBOUND_NAME | `c11JfduMqrkBZrTZ`                       |
 
 ---
 
