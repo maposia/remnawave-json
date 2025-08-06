@@ -22,7 +22,7 @@ func Start() {
 	r.Use(httpsAndProxyMiddleware)
 
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./templates/assets"))))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/assets"))))
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
