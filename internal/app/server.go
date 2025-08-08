@@ -22,6 +22,7 @@ func Start() {
 	r.Use(httpsAndProxyMiddleware)
 
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
+	r.HandleFunc("/{shortUuid}/v2ray-json", v2rayJson()).Methods(http.MethodGet)
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/assets"))))
 
 	server = &http.Server{
@@ -33,6 +34,13 @@ func Start() {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		slog.Error("Error while starting server")
 		panic(err)
+	}
+}
+
+func v2rayJson() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rest.V2rayJson(w, r)
+		return
 	}
 }
 
