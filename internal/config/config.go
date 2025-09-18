@@ -24,6 +24,7 @@ type config struct {
 	appPort                    string
 	webPageTemplate            *template.Template
 	happJsonEnabled            bool
+	xApiKey                    string
 	happRouting                string
 	httpClient                 *http.Client
 	ruOutboundName, ruHostName string
@@ -69,6 +70,10 @@ func GetRuHostName() string {
 	return conf.ruHostName
 }
 
+func GetXApiKey() string {
+	return conf.xApiKey
+}
+
 func GetRuOutboundName() string {
 	return conf.ruOutboundName
 }
@@ -76,12 +81,17 @@ func GetRuOutboundName() string {
 var conf config
 
 type decompressingRoundTripper struct {
-	rt http.RoundTripper
+	rt      http.RoundTripper
+	xApiKey string
 }
 
 func (d *decompressingRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Запрашиваем все популярные кодеки
 	req.Header.Set("Accept-Encoding", "gzip, deflate, br, zstd")
+
+	if d.xApiKey != "" {
+		req.Header.Set("X-API-Key", d.xApiKey)
+	}
 
 	if GetMode() == "local" {
 		req.Header.Set("x-forwarded-for", "127.0.0.1")
@@ -126,9 +136,12 @@ func InitConfig() {
 		slog.Warn("Env file not found")
 	}
 
+	conf.xApiKey = os.Getenv("X_API_KEY")
+
 	conf.httpClient = &http.Client{
 		Transport: &decompressingRoundTripper{
-			rt: http.DefaultTransport,
+			rt:      http.DefaultTransport,
+			xApiKey: GetXApiKey(),
 		},
 	}
 
