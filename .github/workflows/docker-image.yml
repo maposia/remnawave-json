@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-docker-image:
-    runs-on: self-hosted
+#    runs-on: self-hosted
     permissions:
       packages: write
     steps:
