@@ -24,6 +24,7 @@ type config struct {
 	appPort                    string
 	webPageTemplate            *template.Template
 	happJsonEnabled            bool
+	balancerEnabled            bool
 	xApiKey                    string
 	happRouting                string
 	httpClient                 *http.Client
@@ -36,6 +37,10 @@ func GetExceptRuRulesUsers() map[string]string {
 }
 func IsHappJsonEnabled() bool {
 	return conf.happJsonEnabled
+}
+
+func IsBalancerEnabled() bool {
+	return conf.balancerEnabled
 }
 
 func GetHappRouting() string {
@@ -155,6 +160,8 @@ func InitConfig() {
 	}
 
 	conf.happJsonEnabled = os.Getenv("HAPP_JSON_ENABLED") == "true"
+
+	conf.balancerEnabled = os.Getenv("IS_BALANCER_ENABLED") == "true"
 
 	conf.happRouting = os.Getenv("HAPP_ROUTING")
 

@@ -4,13 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"log/slog"
 	"net/http"
 	"remnawave-json/internal/config"
 	"remnawave-json/internal/remnawave"
+
+	"github.com/gorilla/mux"
 )
 
 func Direct(w http.ResponseWriter, r *http.Request) {
@@ -130,17 +131,17 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("JSON parse error: %v", err)
 	} else {
-		if config.GetRuHostName() != "" {
-			rawSub, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
-			if err != nil {
-				log.Printf("JSON parse error: %v", err)
-			}
-
-			ruHost := findRawHostByRemark(rawSub, config.GetRuHostName())
-			if ruHost != nil {
-				UpdateRuOutbound(data, ruHost)
-			}
-		}
+		//if config.GetRuHostName() != "" {
+		//	rawSub, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
+		//	if err != nil {
+		//		log.Printf("JSON parse error: %v", err)
+		//	}
+		//
+		//	ruHost := findRawHostByRemark(rawSub, config.GetRuHostName())
+		//	if ruHost != nil {
+		//		UpdateRuOutbound(data, ruHost)
+		//	}
+		//}
 	}
 
 	if _, exists := config.GetExceptRuRulesUsers()[shortUuid]; exists {
@@ -158,6 +159,7 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
 	}
 }
+
 func CleanRURules(data interface{}) interface{} {
 	arr, ok := data.([]interface{})
 	if !ok {
@@ -198,6 +200,73 @@ func HappJson(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("routing", config.GetHappRouting())
 	r.Header.Set("User-Agent", r.Header.Get("User-Agent"))
 	V2rayJson(w, r)
+}
+
+func BalancerConfig(w http.ResponseWriter, r *http.Request) {
+	r.Header.Set("User-Agent", r.Header.Get("User-Agent"))
+	BalancerJson(w, r)
+}
+
+func BalancerJson(w http.ResponseWriter, r *http.Request) {
+	shortUuid := mux.Vars(r)["shortUuid"]
+
+	rawData, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
+	if err != nil {
+		log.Printf("Failed to get raw subscription: %v", err)
+		return
+	}
+
+	xrayConfig, err := remnawave.ConvertToXrayConfig(rawData)
+	if err != nil {
+		return
+	}
+
+	data, err := DecodeJSON(xrayConfig)
+	if err != nil {
+		log.Printf("JSON parse error: %v", err)
+	}
+
+	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid + "/v2ray-json"
+	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
+	if err != nil {
+		http.Error(w, "failed to create request", http.StatusInternalServerError)
+		return
+	}
+
+	for key, values := range r.Header {
+		for _, value := range values {
+			httpReq.Header.Add(key, value)
+		}
+	}
+
+	resp, err := config.GetHttpClient().Do(httpReq)
+	if err != nil {
+		http.Error(w, "failed to forward request", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	for key, values := range resp.Header {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+	//if _, exists := config.GetExceptRuRulesUsers()[shortUuid]; exists {
+	//	data = CleanRURules(data)
+	//}
+	//for key, values := range resp.Header {
+	//	for _, value := range values {
+	//		w.Header().Add(key, value)
+	//	}
+	//}
+
+	w.Header().Set("routing", "happ://routing/add/eyJOYW1lIjoiIiwiR2xvYmFsUHJveHkiOiJ0cnVlIiwiUmVtb3RlRE5TVHlwZSI6IkRvSCIsIlJlbW90ZUROU0RvbWFpbiI6IiIsIlJlbW90ZUROU0lQIjoiIiwiRG9tZXN0aWNETlNUeXBlIjoiRG9VIiwiRG9tZXN0aWNETlNEb21haW4iOiIiLCJEb21lc3RpY0ROU0lQIjoiIiwiR2VvaXB1cmwiOiJodHRwczovL2dpdGh1Yi5jb20vZnJheVpWL3NpbXBsZS1ydS1nZW9pcC9yZWxlYXNlcy9sYXRlc3QvZG93bmxvYWQvZ2VvaXAuZGF0IiwiR2Vvc2l0ZXVybCI6Imh0dHBzOi8vZ2l0aHViLmNvbS9mcmF5WlYvc2ltcGxlLXJ1LWdlb3NpdGUvcmVsZWFzZXMvbGF0ZXN0L2Rvd25sb2FkL2dlb3NpdGUuZGF0IiwiTGFzdFVwZGF0ZWQiOiIiLCJEbnNIb3N0cyI6e30sIkRpcmVjdFNpdGVzIjpbXSwiRGlyZWN0SXAiOltdLCJQcm94eVNpdGVzIjpbXSwiUHJveHlJcCI6W10sIkJsb2NrU2l0ZXMiOltdLCJCbG9ja0lwIjpbXSwiRG9tYWluU3RyYXRlZ3kiOiJJUElmTm9uTWF0Y2giLCJGYWtlRE5TIjoiZmFsc2UiLCJVc2VDaHVua0ZpbGVzIjoidHJ1ZSJ9")
+
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+	}
 }
 
 func DecodeJSON(body []byte) (interface{}, error) {

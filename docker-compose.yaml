@@ -1,9 +1,9 @@
 services:
   remnawave-json:
-    image: ghcr.io/jolymmiels/remnawave-json:latest
+    image: ghcr.io/maposia/remnawave-json:latest
     network_mode: host
     env_file:
       - .env
     volumes:
       - ./templates/subscription/index.html:/app/templates/subscription/index.html
-      - ./templates/assets/app-config.json:/app/templates/assets/app-config.json
+      - ./templates/subscription/assets/app-config.json:/app/templates/subscription/assets/app-config.json

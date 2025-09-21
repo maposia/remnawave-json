@@ -23,7 +23,8 @@ func Start() {
 
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
 	r.HandleFunc("/{shortUuid}/v2ray-json", v2rayJson()).Methods(http.MethodGet)
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/assets"))))
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./templates/subscription/assets"))))
+	r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("./templates/subscription/locales"))))
 
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
@@ -85,6 +86,11 @@ func userAgentRouter() http.HandlerFunc {
 		}
 		if strings.Contains(userAgent, "Streisand") {
 			rest.V2rayJson(w, r)
+			return
+		}
+
+		if strings.Contains(userAgent, "Happ") && config.IsBalancerEnabled() {
+			rest.BalancerConfig(w, r)
 			return
 		}
 
