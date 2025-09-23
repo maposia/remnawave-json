@@ -23,9 +23,11 @@ func Start() {
 
 	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
 	r.HandleFunc("/{shortUuid}/v2ray-json", v2rayJson()).Methods(http.MethodGet)
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/subscription/assets"))))
-	r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("/app/templates/subscription/locales"))))
+	//r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/subscription/assets"))))
+	//r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("/app/templates/subscription/locales"))))
 
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./templates/subscription/assets"))))
+	r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("./templates/subscription/locales"))))
 	server = &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.GetAppHost(), config.GetAppPort()),
 		Handler: r,

@@ -20,12 +20,16 @@ type XrayConverterResponse struct {
 	RawHosts          []RawHost         `json:"rawHosts"`
 }
 
+//	type Happ struct {
+//		CryptoLink string `json:"cryptoLink"`
+//	}
 type SubscriptionResponse struct {
 	IsFound         bool                   `json:"isFound"`
 	User            User                   `json:"user"`
 	Links           []string               `json:"links"`
 	SsConfLinks     map[string]interface{} `json:"ssConfLinks"`
 	SubscriptionUrl string                 `json:"subscriptionUrl"`
+	Happ            Happ                   `json:"happ"`
 }
 
 type Response struct {

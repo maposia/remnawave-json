@@ -71,6 +71,8 @@ func WebPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(sub)
+
 	wrapped := struct {
 		Response interface{} `json:"response"`
 	}{
