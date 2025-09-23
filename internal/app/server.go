@@ -21,10 +21,10 @@ func Start() {
 
 	r.Use(httpsAndProxyMiddleware)
 
-	r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
-	r.HandleFunc("/{shortUuid}/v2ray-json", v2rayJson()).Methods(http.MethodGet)
-	//r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/subscription/assets"))))
-	//r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("/app/templates/subscription/locales"))))
+	//r.HandleFunc("/{shortUuid}", userAgentRouter()).Methods(http.MethodGet)
+	//r.HandleFunc("/{shortUuid}/v2ray-json", v2rayJson()).Methods(http.MethodGet)
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("/app/templates/subscription/assets"))))
+	r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("/app/templates/subscription/locales"))))
 
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./templates/subscription/assets"))))
 	r.PathPrefix("/locales/").Handler(http.StripPrefix("/locales/", http.FileServer(http.Dir("./templates/subscription/locales"))))
