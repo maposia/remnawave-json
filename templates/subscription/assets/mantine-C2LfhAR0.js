@@ -1,4 +1,4 @@
-import{r as h,R as Ge,a as ws,b as pd,c as Gn,g as Qi}from"./react-D90MjTvo.js";import{r as md}from"./date-CnkRpZd7.js";var kr={exports:{}},Bn={};/**
+import{r as h,R as Ge,a as ws,b as pd,c as Gn,g as Qi}from "templates/subscription/assets/react-DmmUB13w.js";import{r as md}from "templates/subscription/assets/date-EjOwB64P.js";var kr={exports:{}},Bn={};/**
  * @license React
  * react-jsx-runtime.production.js
  *
