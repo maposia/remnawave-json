@@ -4,7 +4,11 @@
       "fa",
       "ru",
       "zh"
-    ]
+    ],
+    "branding": {
+      "name": "Sega VPN",
+      "supportUrl": "http://t.me/segaVPNSupportBot"
+    }
   },
   "platforms": {
     "ios": [
