@@ -532,7 +532,7 @@ func ConvertToXrayConfig(wrapper *ResponseConverterWrapper) ([]byte, error) {
 			Balancers: []Balancer{
 				{
 					Tag:      "proxy-balancer",
-					Selector: []string{"proxy1", "proxy2"},
+					Selector: []string{"proxy1", "proxy2", "proxy3"},
 					Strategy: Strategy{Type: "roundRobin"},
 				},
 			},
@@ -550,9 +550,6 @@ func ConvertToXrayConfig(wrapper *ResponseConverterWrapper) ([]byte, error) {
 	}
 
 	hostsToProcess := len(response.RawHosts)
-	if hostsToProcess > 2 {
-		hostsToProcess = 2
-	}
 
 	for i := 0; i < hostsToProcess; i++ {
 		host := response.RawHosts[i]
