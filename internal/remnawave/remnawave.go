@@ -186,11 +186,11 @@ type VNext struct {
 	Users   []UserToRaw `json:"users"`
 }
 type Routing struct {
-	DomainMatcher  string      `json:"domainMatcher"`
-	DomainStrategy string      `json:"domainStrategy"`
-	Rules          []Rule      `json:"rules"`
-	Balancers      []Balancer  `json:"balancers"`
-	Observatory    Observatory `json:"observatory"`
+	DomainMatcher    string           `json:"domainMatcher"`
+	DomainStrategy   string           `json:"domainStrategy"`
+	Rules            []Rule           `json:"rules"`
+	Balancers        []Balancer       `json:"balancers"`
+	BurstObservatory BurstObservatory `json:"burstObservatory"`
 }
 
 type Rule struct {
@@ -274,6 +274,19 @@ type Observatory struct {
 	ProbeUrl          string   `json:"probeUrl"`
 	ProbeInterval     string   `json:"probeInterval"`
 	EnableConcurrency bool     `json:"enableConcurrency"`
+}
+
+type BurstObservatory struct {
+	SubjectSelector []string   `json:"subjectSelector"`
+	PingConfig      PingConfig `json:"pingConfig"`
+}
+
+type PingConfig struct {
+	Interval     string `json:"interval"`
+	Timeout      string `json:"timeout"`
+	Destination  string `json:"destination"`
+	Connectivity string `json:"connectivity"`
+	Sampling     int    `json:"sampling"`
 }
 type Sniffing struct {
 	DestOverride []string `json:"destOverride"`
@@ -519,11 +532,15 @@ func ConvertToXrayConfig(wrapper *ResponseConverterWrapper) ([]byte, error) {
 					Strategy: Strategy{Type: "roundRobin"},
 				},
 			},
-			Observatory: Observatory{
-				SubjectSelector:   []string{"proxy"},
-				ProbeUrl:          "https://www.google.com/generate_204",
-				ProbeInterval:     "10s",
-				EnableConcurrency: false,
+			BurstObservatory: BurstObservatory{
+				SubjectSelector: []string{"proxy"},
+				PingConfig: PingConfig{
+					Interval:     "5m",
+					Timeout:      "10s",
+					Destination:  "https://connectivitycheck.gstatic.com/generate_204",
+					Connectivity: "",
+					Sampling:     3,
+				},
 			},
 		},
 	}
