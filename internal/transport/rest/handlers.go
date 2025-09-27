@@ -254,7 +254,7 @@ func BalancerJson(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rawData, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
+	rawData, err := remnawave.GetRawSubscription(shortUuid, r)
 	if err != nil {
 		log.Printf("Failed to get raw subscription: %v", err)
 		return

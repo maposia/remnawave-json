@@ -335,7 +335,7 @@ func GetSubscription(shortUuid string, header string) (*SubscriptionResponse, er
 	return &response.Response, nil
 }
 
-func GetRawSubscription(shortUuid string, header string) (*ResponseConverterWrapper, error) {
+func GetRawSubscription(shortUuid string, r *http.Request) (*ResponseConverterWrapper, error) {
 	url := fmt.Sprintf("%s/api/subscriptions/by-short-uuid/%s/raw", config.GetRemnaweveURL(), shortUuid)
 	slog.Info("Making request to raw subscription", "url", url, "shortUuid", shortUuid)
 
@@ -345,7 +345,9 @@ func GetRawSubscription(shortUuid string, header string) (*ResponseConverterWrap
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", header)
+	for k, v := range r.Header {
+		httpReq.Header.Set(k, v[0])
+	}
 
 	token := config.GetRemnawaveToken()
 	if token != nil && token != "" {
@@ -367,6 +369,8 @@ func GetRawSubscription(shortUuid string, header string) (*ResponseConverterWrap
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %w", err)
 	}
+
+	fmt.Println(string(body))
 
 	var wrapper ResponseConverterWrapper
 	if err := json.Unmarshal(body, &wrapper); err != nil {
