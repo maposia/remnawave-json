@@ -127,6 +127,17 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(body) == 0 {
+		for key, values := range resp.Header {
+			for _, value := range values {
+				w.Header().Add(key, value)
+			}
+		}
+
+		w.WriteHeader(resp.StatusCode)
+		return
+	}
+
 	data, err := DecodeJSON(body)
 	if err != nil {
 		log.Printf("JSON parse error: %v", err)
@@ -145,7 +156,11 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, exists := config.GetExceptRuRulesUsers()[shortUuid]; exists {
-		data = CleanRURules(data)
+		if data != nil {
+			data = CleanRURules(data)
+		} else {
+			fmt.Println("data is nil")
+		}
 	}
 	for key, values := range resp.Header {
 		for _, value := range values {
@@ -154,10 +169,12 @@ func V2rayJson(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(resp.StatusCode)
-
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+	if data != nil {
+		if err := json.NewEncoder(w).Encode(data); err != nil {
+			http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+		}
 	}
+
 }
 
 func CleanRURules(data interface{}) interface{} {
@@ -210,22 +227,6 @@ func BalancerConfig(w http.ResponseWriter, r *http.Request) {
 func BalancerJson(w http.ResponseWriter, r *http.Request) {
 	shortUuid := mux.Vars(r)["shortUuid"]
 
-	rawData, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
-	if err != nil {
-		log.Printf("Failed to get raw subscription: %v", err)
-		return
-	}
-
-	xrayConfig, err := remnawave.ConvertToXrayConfig(rawData)
-	if err != nil {
-		return
-	}
-
-	data, err := DecodeJSON(xrayConfig)
-	if err != nil {
-		log.Printf("JSON parse error: %v", err)
-	}
-
 	proxyURL := config.GetRemnaweveURL() + "/api/sub/" + shortUuid + "/v2ray-json"
 	httpReq, err := http.NewRequest(r.Method, proxyURL, r.Body)
 	if err != nil {
@@ -247,10 +248,30 @@ func BalancerJson(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	for key, values := range resp.Header {
+		fmt.Println(key, values)
 		for _, value := range values {
 			w.Header().Add(key, value)
 		}
 	}
+
+	rawData, err := remnawave.GetRawSubscription(shortUuid, r.Header.Get("User-Agent"))
+	if err != nil {
+		log.Printf("Failed to get raw subscription: %v", err)
+		return
+	}
+
+	xrayConfig, err := remnawave.ConvertToXrayConfig(rawData)
+	if err != nil {
+		log.Printf("Failed to convert to Xray config: %v", err)
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	data, err := DecodeJSON(xrayConfig)
+	if err != nil {
+		log.Printf("JSON parse error: %v", err)
+	}
+
 	//if _, exists := config.GetExceptRuRulesUsers()[shortUuid]; exists {
 	//	data = CleanRURules(data)
 	//}
